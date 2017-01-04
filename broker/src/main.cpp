@@ -1,6 +1,8 @@
 #include <iostream>
+#include <message.h>
 
-int main(int argc, char * argv[]) {
-  std::cout << "I'm a server!" << std::endl;
+int main(int argc, char* argv[]) {
+  Message exampleMessage("I'm alive!");
+  std::cout << exampleMessage.getMessage() << "\n";
   return 0;
 }
