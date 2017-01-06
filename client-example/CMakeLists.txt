@@ -1,0 +1,12 @@
+cmake_minimum_required(VERSION 3.5)
+project(client-example)
+
+set(PROJECT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
+
+set(CLIENT_EXAMPLE_SOURCES ${PROJECT_SOURCE_DIR}/main.cpp)
+
+include_directories(${CLIENT_INCLUDE_DIRS})
+include_directories("${PROJECT_BINARY_DIR}")
+
+add_executable(CLIENT-EXAMPLE ${CLIENT_EXAMPLE_SOURCES})
+target_link_libraries(CLIENT-EXAMPLE client)
