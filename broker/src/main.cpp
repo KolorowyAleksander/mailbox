@@ -1,4 +1,4 @@
-#include <message.h>
+#include <client/message.h>
 
 #include <netinet/in.h>
 #include <sys/socket.h>
@@ -46,14 +46,13 @@ int main(int argc, char* argv[]) {
     std::cerr << "Accept failed! " << std::strerror(errno) << std::endl;
     return 1;
   } else {
-    std::vector<unsigned char> buffer;
-    buffer.reserve(5);
+    std::string buffer;
+    buffer.resize(5);
     if (read(newSocketFd, &buffer[0], 5) < 0) {
       std::cerr << "Cannot read " << std::strerror(errno) << std::endl;
       return 1;
     }
-    std::string s(buffer.begin(), buffer.begin() + 5);
-    std::cout << s << std::endl;
+    std::cout << buffer << std::endl;
   }
 
   std::cout << "Nawiązano połączenie!" << std::endl;
