@@ -2,9 +2,11 @@
 
 #include <netinet/in.h>
 #include <sys/socket.h>
+#include <unistd.h>
 #include <cerrno>
 #include <cstring>
 #include <iostream>
+#include <vector>
 
 int main(int argc, char* argv[]) {
   int fd;
@@ -23,7 +25,7 @@ int main(int argc, char* argv[]) {
 
   if (setsockopt(fd, SOL_SOCKET, SO_KEEPALIVE, &optval, sizeof optval) < 0) {
     std::cerr << "Setting socket options failed!" << std::endl;
-  return 1;
+    return 1;
   }
   sockaddr_in socketAddress = {AF_INET, htons(port), in_addr{INADDR_ANY}};
 
@@ -38,16 +40,22 @@ int main(int argc, char* argv[]) {
   }
 
   int newSocketFd;
-  sockaddr_in inSocketAddress;
-  socklen_t inSocketAddressSize = sizeof inSocketAddress;
-  if ((newSocketFd = accept(fd, (sockaddr*)&inSocketAddress,
-                            &inSocketAddressSize)) < 0) {
-    std::cerr << "Accepting a socket failed! " << std::strerror(errno)
-              << std::endl;
+  sockaddr_in inAddr;
+  socklen_t inAddrSize = sizeof inAddr;
+  if ((newSocketFd = accept(fd, (sockaddr*)&inAddr, &inAddrSize)) < 0) {
+    std::cerr << "Accept failed! " << std::strerror(errno) << std::endl;
     return 1;
+  } else {
+    std::vector<unsigned char> buffer;
+    buffer.reserve(5);
+    if (read(newSocketFd, &buffer[0], 5) < 0) {
+      std::cerr << "Cannot read " << std::strerror(errno) << std::endl;
+      return 1;
+    }
+    std::string s(buffer.begin(), buffer.begin() + 5);
+    std::cout << s << std::endl;
   }
 
-  
   std::cout << "Nawiązano połączenie!" << std::endl;
 
   Message exampleMessage("I'm alive!");
