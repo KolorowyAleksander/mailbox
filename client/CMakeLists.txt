@@ -1,15 +1,16 @@
 cmake_minimum_required(VERSION 3.5)
 project(client)
 
-set (PROJECT_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME})
+set (PROJECT_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include/)
 set (PROJECT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
-set (CLIENT_SOURCES ${PROJECT_SOURCE_DIR}/message.cpp)
+set (CLIENT_SOURCES ${PROJECT_SOURCE_DIR}/message.cpp
+                    ${PROJECT_SOURCE_DIR}/Connection.cpp)
 
 include_directories("${PROJECT_INCLUDE_DIR}")
 include_directories("${PROJECT_BINARY_DIR}")
 
 add_library(${PROJECT_NAME} SHARED ${CLIENT_SOURCES})
 
-set(CLIENT_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/include
+set(CLIENT_INCLUDE_DIRS ${PROJECT_INCLUDE_DIR}
     CACHE INTERNAL "${PROJECT_NAME}: Include Directories" FORCE)
