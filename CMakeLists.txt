@@ -8,6 +8,6 @@ set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/build)
 
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 
-add_subdirectory(client)
-add_subdirectory(client-example)
+add_subdirectory(postman)
 add_subdirectory(mailbox)
+add_subdirectory(client-example)

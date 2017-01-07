@@ -1,16 +1,16 @@
 cmake_minimum_required(VERSION 3.5)
-project(client)
+project(postman)
 
 set (PROJECT_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include/)
 set (PROJECT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
-set (CLIENT_SOURCES ${PROJECT_SOURCE_DIR}/Message.cpp
+set (POSTMAN_SOURCES ${PROJECT_SOURCE_DIR}/Message.cpp
                     ${PROJECT_SOURCE_DIR}/Connection.cpp)
 
 include_directories("${PROJECT_INCLUDE_DIR}")
 include_directories("${PROJECT_BINARY_DIR}")
 
-add_library(${PROJECT_NAME} SHARED ${CLIENT_SOURCES})
+add_library(${PROJECT_NAME} SHARED ${POSTMAN_SOURCES})
 
-set(CLIENT_INCLUDE_DIRS ${PROJECT_INCLUDE_DIR}
+set(POSTMAN_INCLUDE_DIRS ${PROJECT_INCLUDE_DIR}
     CACHE INTERNAL "${PROJECT_NAME}: Include Directories" FORCE)

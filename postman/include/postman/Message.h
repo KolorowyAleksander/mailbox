@@ -8,9 +8,7 @@ class Message {
   std::vector<unsigned char> message;
 
  public:
-  Message(std::vector<unsigned char> message);
-  Message(void * data, size_t size);
-  std::string getMessage();
+  Message();
 };
 
 #endif  // MESSAGE_H

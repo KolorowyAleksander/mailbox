@@ -1,5 +1,3 @@
-#include <client/Message.h>
-
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <unistd.h>
@@ -56,8 +54,5 @@ int main(int argc, char* argv[]) {
   }
 
   std::cout << "Nawiązano połączenie!" << std::endl;
-
-  Message exampleMessage("I'm alive!");
-  std::cout << exampleMessage.getMessage() << "\n";
   return 0;
 }

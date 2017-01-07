@@ -1,7 +1,7 @@
 #ifndef CONNECTION_H
 #define CONNECTION_H
 
-#include <client/Message.h>
+#include <postman/Message.h>
 #include <string>
 
 class Connection {
@@ -13,7 +13,7 @@ class Connection {
  public:
   Connection(std::string host, int port);
   void connect(); //::global namespace operator
-  void sendMessage(Message message); //global namespace operator
+  void send(); //global namespace operator
   void recieve();
   void ack();
 };
