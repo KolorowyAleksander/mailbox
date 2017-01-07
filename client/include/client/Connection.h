@@ -1,19 +1,21 @@
 #ifndef CONNECTION_H
 #define CONNECTION_H
 
-#include <client/message.h>
+#include <client/Message.h>
 #include <string>
 
 class Connection {
-private:
+ private:
   int socketFd;
   int port;
   std::string hostName;
 
  public:
   Connection(std::string host, int port);
-  void connect();
-  void send(Message message);
+  void connect(); //::global namespace operator
+  void sendMessage(Message message); //global namespace operator
+  void recieve();
+  void ack();
 };
 
 #endif  // CONNECTION_H

@@ -1,4 +1,4 @@
-#include <client/message.h>
+#include <client/Message.h>
 
 Message::Message(std::string message) { this->message = message; }
 

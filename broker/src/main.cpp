@@ -1,4 +1,4 @@
-#include <client/message.h>
+#include <client/Message.h>
 
 #include <netinet/in.h>
 #include <sys/socket.h>
