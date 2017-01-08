@@ -34,10 +34,9 @@ int main(int argc, char* argv[]) {
     return errorHappened("We cannot hear you!");
   }
 
+  int newSocketFd;
   sockaddr_in inAddr;
   socklen_t inAddrSize = sizeof inAddr;
-
-  int newSocketFd;
   while ((newSocketFd = accept(socket, (sockaddr*)&inAddr, &inAddrSize)) !=
          -1) {
     std::thread((ConnectionReciever(newSocketFd, inAddr))).detach();
