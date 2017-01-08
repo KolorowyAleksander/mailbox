@@ -8,35 +8,38 @@
 #include <iostream>
 #include <vector>
 
+
+int errorHappened(std::string message) {
+  logger::log.error(message, errno);
+  return 1;
+}
+
 int main(int argc, char* argv[]) {
+  logger::log.info("Constructing mailbox.");
+  
   int fd;
   int port = 1410;
 
   if ((fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0) {
-    logger::log.error("Creating socket failed", errno);
-    return 1;
+    return errorHappened("Socket was not created!");
   }
 
   int optval = 1;
   if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof optval) < 0) {
-    std::cerr << "Setting socket options failed!" << std::endl;
-    return 1;
+    return errorHappened("Setting socket reuseaddr options failed!");
   }
 
   if (setsockopt(fd, SOL_SOCKET, SO_KEEPALIVE, &optval, sizeof optval) < 0) {
-    std::cerr << "Setting socket options failed!" << std::endl;
-    return 1;
+    return errorHappened("Setting socket options failed!");
   }
   sockaddr_in socketAddress = {AF_INET, htons(port), in_addr{INADDR_ANY}};
 
   if (bind(fd, (sockaddr*)&socketAddress, sizeof socketAddress) < 0) {
-    std::cerr << "There's a problem with bind, capitain! " << std::endl;
-    return 1;
+    return errorHappened("There's a problem with bind, capitain!");
   }
 
   if (listen(fd, -1) < 0) {
-    std::cerr << "We cannot hear you!" << std::endl;
-    return 1;
+    return errorHappened("We cannot hear you!");
   }
 
   int newSocketFd;
@@ -54,10 +57,6 @@ int main(int argc, char* argv[]) {
     }
     std::cout << buffer << std::endl;
   }
-
-  std::cout << "Nawiązano połączenie!" << std::endl;
-  logger::log.debug("Trying to log something");
-  logger::log.error("Logging an error here");
 
   return 0;
 }
