@@ -13,7 +13,7 @@ via TCP and send or recieve messages
 is the example client app
 
 #####libraries/external dependencies we're using:
--magical c++ date library: https://howardhinnant.github.io/date/date.html
+- magical c++ date library: https://howardhinnant.github.io/date/date.html
 
 #####caution:
 logger will spit out gibberish on non-ansi terminal when printing errors
