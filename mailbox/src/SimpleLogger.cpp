@@ -15,7 +15,7 @@ Log log(_logFileName);
 
 Log::Log(std::string filename) {
   logFileName = filename;
-  logFile.open(logFileName);
+  logFile.open(logFileName, std::ofstream::out | std::ofstream::app);
 }
 
 Log::~Log() { logFile.close(); }
