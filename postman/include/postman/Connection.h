@@ -12,8 +12,8 @@ class Connection {
 
  public:
   Connection(std::string host, int port);
-  void connect(); //::global namespace operator
-  void send(); //global namespace operator
+  void connect();  //::global namespace operator
+  void send();     // global namespace operator
   void recieve();
   void ack();
 };
