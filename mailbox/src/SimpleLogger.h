@@ -12,7 +12,7 @@ class Log {
   Log(std::string filename);
   ~Log();
   void error(std::string message);
-  void error(std::string message, int errno);
+  void error(std::string message, int errnum);
   void debug(std::string message);
   void info(std::string message);
 

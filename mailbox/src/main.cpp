@@ -1,3 +1,4 @@
+#include <ConnectionReciever.h>
 #include <SimpleLogger.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
@@ -12,7 +13,7 @@ int main(int argc, char* argv[]) {
   int port = 1410;
 
   if ((fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0) {
-    std::cerr << "Error creating socket" << std::endl;
+    logger::log.error("Creating socket failed", errno);
     return 1;
   }
 

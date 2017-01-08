@@ -45,13 +45,13 @@ void Log::error(std::string message) {
   lock.unlock();
 }
 
-void Log::error(std::string message, int errno) {
+void Log::error(std::string message, int errnum) {
   auto now = std::chrono::high_resolution_clock::now();
   lock.lock();
   std::cerr << "\033[1;31m"
-            << "[ERROR] " << now << " " << message << " "
+            << "[ERROR] " << now << " " << message << ": "
             << std::strerror(errno) << "\033[0m" << std::endl;
-  logFile << "[ERROR] " << now << " " << message << " " << std::strerror(errno)
+  logFile << "[ERROR] " << now << " " << message << ": " << std::strerror(errnum)
           << std::endl;
   lock.unlock();
 }
