@@ -44,4 +44,15 @@ void Log::error(std::string message) {
   logFile << "[ERROR] " << now << " " << message << std::endl;
   lock.unlock();
 }
+
+void Log::error(std::string message, int errno) {
+  auto now = std::chrono::high_resolution_clock::now();
+  lock.lock();
+  std::cerr << "\033[1;31m"
+            << "[ERROR] " << now << " " << message << " "
+            << std::strerror(errno) << "\033[0m" << std::endl;
+  logFile << "[ERROR] " << now << " " << message << " " << std::strerror(errno)
+          << std::endl;
+  lock.unlock();
+}
 }
