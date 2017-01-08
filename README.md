@@ -2,4 +2,4 @@
 
 --00FF - sending message
 
-requirements: cmake, make
+magical c++ date library: https://howardhinnant.github.io/date/date.html
