@@ -12,7 +12,7 @@ via TCP and send or recieve messages
 #####client-example
 is the example client app
 
-######libraries/external dependencies we're using:
+#####libraries/external dependencies we're using:
 -magical c++ date library: https://howardhinnant.github.io/date/date.html
 
 #####caution:
