@@ -1,6 +1,29 @@
 #include <ConnectionReciever.h>
 #include <SimpleLogger.h>
 
+#include <arpa/inet.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
+#include <unistd.h>
+#include <cerrno>
+#include <iostream>
+#include <string>
+
+ConnectionReciever::ConnectionReciever(int socket, sockaddr_in addr)
+    : _socket{socket},
+      _host{std::string(inet_ntoa(addr.sin_addr))},
+      _port{addr.sin_port} {}
+
 void ConnectionReciever::operator()() {
-  logger::log.info("I'm inside ConnectionReciever!");
+  logger::log.info("New connection from: " + _host + " on " +
+                   std::to_string(_port));
+
+  std::string buffer;
+  buffer.resize(100);
+  if (read(_socket, &buffer[0], 100) < 0) {
+    logger::log.error("Error while reading from buffer!", errno);
+    return;
+  }
+
+  logger::log.info("Recieved: " + buffer);
 }

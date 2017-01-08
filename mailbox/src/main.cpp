@@ -1,13 +1,10 @@
 #include <ConnectionReciever.h>
 #include <SimpleLogger.h>
+
 #include <netinet/in.h>
 #include <sys/socket.h>
-#include <unistd.h>
 #include <cerrno>
-#include <cstring>
-#include <iostream>
-#include <vector>
-
+#include <thread>
 
 int errorHappened(std::string message) {
   logger::log.error(message, errno);
@@ -16,7 +13,7 @@ int errorHappened(std::string message) {
 
 int main(int argc, char* argv[]) {
   logger::log.info("Constructing mailbox.");
-  
+
   int fd;
   int port = 1410;
 
@@ -42,21 +39,13 @@ int main(int argc, char* argv[]) {
     return errorHappened("We cannot hear you!");
   }
 
-  int newSocketFd;
   sockaddr_in inAddr;
   socklen_t inAddrSize = sizeof inAddr;
-  if ((newSocketFd = accept(fd, (sockaddr*)&inAddr, &inAddrSize)) < 0) {
-    std::cerr << "Accept failed! " << std::strerror(errno) << std::endl;
-    return 1;
-  } else {
-    std::string buffer;
-    buffer.resize(5);
-    if (read(newSocketFd, &buffer[0], 5) < 0) {
-      std::cerr << "Cannot read " << std::strerror(errno) << std::endl;
-      return 1;
-    }
-    std::cout << buffer << std::endl;
-  }
 
+  int newSocketFd;
+  while ((newSocketFd = accept(fd, (sockaddr*)&inAddr, &inAddrSize)) != -1) {
+    std::thread t((ConnectionReciever(newSocketFd, inAddr)));
+    t.detach();
+  }
   return 0;
 }
