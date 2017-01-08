@@ -3,8 +3,11 @@ project(mailbox)
 
 set(PROJECT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
-set(MAILBOX_SOURCES ${PROJECT_SOURCE_DIR}/main.cpp)
+set(MAILBOX_SOURCES ${PROJECT_SOURCE_DIR}/main.cpp
+                    ${PROJECT_SOURCE_DIR}/SimpleLogger.h
+                    ${PROJECT_SOURCE_DIR}/SimpleLogger.cpp)
 
+include_directories(${PROJECT_SOURCE_DIR})
 include_directories(${POSTMAN_INCLUDE_DIRS})
 include_directories("${PROJECT_BINARY_DIR}")
 

@@ -1,3 +1,4 @@
+#include <SimpleLogger.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <unistd.h>
@@ -54,5 +55,8 @@ int main(int argc, char* argv[]) {
   }
 
   std::cout << "Nawiązano połączenie!" << std::endl;
+  logger::log.debug("Trying to log something");
+  logger::log.error("Logging an error here");
+
   return 0;
 }
