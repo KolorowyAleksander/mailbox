@@ -20,8 +20,8 @@ int main(int argc, char* argv[]) {
     return errorHappened("Socket was not created!");
   }
 
-  int optval = 1;
-  if (setsockopt(socket, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof optval) < 0) {
+  int opt = 1;
+  if (setsockopt(socket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof opt) < 0) {
     return errorHappened("Setting socket reuseaddr options failed!");
   }
 
@@ -38,7 +38,8 @@ int main(int argc, char* argv[]) {
   socklen_t inAddrSize = sizeof inAddr;
 
   int newSocketFd;
-  while ((newSocketFd = accept(socket, (sockaddr*)&inAddr, &inAddrSize)) != -1) {
+  while ((newSocketFd = accept(socket, (sockaddr*)&inAddr, &inAddrSize)) !=
+         -1) {
     std::thread((ConnectionReciever(newSocketFd, inAddr))).detach();
   }
 
