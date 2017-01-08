@@ -13,6 +13,7 @@ class Log {
   ~Log();
   void error(std::string message);
   void debug(std::string message);
+  void info(std::string message);
 
  private:
   std::mutex lock;

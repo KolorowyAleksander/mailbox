@@ -28,6 +28,14 @@ void Log::debug(std::string message) {
   lock.unlock();
 }
 
+void Log::info(std::string message) {
+  auto now = std::chrono::high_resolution_clock::now();
+  lock.lock();
+  std::cout << "[INFO]: " << now << " " << message << std::endl;
+  logFile << "[INFO]: " << now << " " << message << std::endl;
+  lock.unlock();
+}
+
 void Log::error(std::string message) {
   auto now = std::chrono::high_resolution_clock::now();
   lock.lock();
