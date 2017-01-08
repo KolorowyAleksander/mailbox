@@ -51,8 +51,8 @@ void Log::error(std::string message, int errnum) {
   std::cerr << "\033[1;31m"
             << "[ERROR] " << now << " " << message << ": "
             << std::strerror(errno) << "\033[0m" << std::endl;
-  logFile << "[ERROR] " << now << " " << message << ": " << std::strerror(errnum)
-          << std::endl;
+  logFile << "[ERROR] " << now << " " << message << ": "
+          << std::strerror(errnum) << std::endl;
   lock.unlock();
 }
 }
