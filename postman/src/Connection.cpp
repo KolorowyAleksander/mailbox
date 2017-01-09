@@ -1,37 +1,48 @@
+#include <postman/Connection.h>
+#include <postman/PostmanConnectionException.h>
+
 #include <arpa/inet.h>
 #include <netinet/in.h>
-#include <postman/Connection.h>
 #include <sys/socket.h>
 #include <unistd.h>
 #include <cerrno>
 #include <cstring>
 #include <iostream>
+#include <string>
 #include <vector>
 
-Connection::Connection(std::string host, int port)
-    : port{port}, hostName{host} {
-  if ((socketFd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0) {
-    std::cerr << "Error creating socket" << std::endl;
-    // TODO: throw an exception here
+Connection::Connection(std::string host, int port) : _port{port}, _host{host} {
+  if ((_socket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0) {
+    throw PostmanConnectionException("Cannot create socket.");
   }
 
-  sockaddr_in socketAddress = {AF_INET, htons(port),
-                               in_addr{inet_addr(hostName.c_str())}};
-  socklen_t socketAddressLenght = sizeof socketAddress;
-  if (::connect(socketFd, (sockaddr *)&socketAddress, socketAddressLenght) <
-      0) {
-    std::cerr << "Error connectioning" << std::endl;
-    // TODO: throw an exception here
+  sockaddr_in addr = {AF_INET, htons(_port), in_addr{inet_addr(_host.c_str())}};
+  socklen_t addrSize = sizeof addr;
+  if (::connect(_socket, (sockaddr *)&addr, addrSize) < 0) {
+    throw PostmanConnectionException("Cannot connect to the socket");
   }
 }
 
-void Connection::connect() {}
+Connection::~Connection() { close(_socket); }
 
-void Connection::send() {
-  std::vector<unsigned char> buffer = {'0', '0', 'F', 'F'};
-  if (::send(socketFd, &buffer[0], 4, 0) < 0) {
-    std::cerr << "Error sending" << std::endl;
-    // TODO: throw an exception here
+void Connection::publish(std::vector<uint8_t> data, std::string bindingKey) {
+  uint8_t tag = 06;
+  uint64_t messageSize = data.size();
+  try {
+    if (write(_socket, &tag, 1) < 0) {
+      throw PostmanConnectionException("Cannot publish message tag.");
+    }
+
+    if (write(_socket, &messageSize, 8) < 0) {
+      throw PostmanConnectionException("Cannot publish message size.");
+    }
+
+    if (write(_socket, &data[0], data.size()) < 0) {
+      throw PostmanConnectionException("Cannot publish message.");
+    }
+  } catch (PostmanConnectionException e) {
+    close(_socket);
+    throw PostmanConnectionException("Cannot publish message");
   }
 }
 

@@ -6,14 +6,14 @@
 
 class Connection {
  private:
-  int socketFd;
-  int port;
-  std::string hostName;
+  int _socket;
+  std::string _host;
+  int _port;
 
  public:
   Connection(std::string host, int port);
-  void connect();
-  void send();
+  ~Connection();
+  void publish(std::vector<uint8_t> data, std::string bindingKey);
   void recieve();
   void ack();
 };

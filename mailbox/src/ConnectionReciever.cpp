@@ -2,12 +2,10 @@
 #include <SimpleLogger.h>
 
 #include <arpa/inet.h>
-#include <netinet/in.h>
-#include <sys/socket.h>
 #include <unistd.h>
 #include <cerrno>
 #include <iostream>
-#include <string>
+#include <vector>
 
 ConnectionReciever::ConnectionReciever(int socket, sockaddr_in addr)
     : _socket{socket},
@@ -30,12 +28,26 @@ void ConnectionReciever::operator()() {
   logger::log.info("New connection from: " + _host + " on " +
                    std::to_string(_port));
 
-  std::string buffer;
-  buffer.resize(100);
-  if (read(_socket, &buffer[0], 100) < 0) {
-    logger::log.error("Error while reading from buffer!", errno);
+  uint8_t tag;
+  if (read(_socket, &tag, 1) < 0) {
+    logger::log.error("Error while reading tag socket!", errno);
     return;
   }
 
-  logger::log.info("Recieved: " + buffer);
+  uint64_t size;
+  if (read(_socket, &size, 8) < 0) {
+    logger::log.error("Error while reading size from socket!", errno);
+    return;
+  }
+
+  std::vector<uint8_t> buffer;
+  buffer.reserve(size);
+  if (read(_socket, &buffer[0], 100) < 0) {
+    logger::log.error("Error while reading from socket!", errno);
+    return;
+  }
+
+  std::string message(buffer.begin(), buffer.begin() + size);
+  logger::log.info("Recieved: " + std::to_string(tag) + " message, size: " +
+                   std::to_string(size) + " " + message);
 }

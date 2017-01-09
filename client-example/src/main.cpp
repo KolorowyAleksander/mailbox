@@ -1,10 +1,18 @@
 #include <postman/Connection.h>
 #include <postman/Message.h>
+#include <postman/PostmanException.h>
 #include <iostream>
 
 int main(int argc, char* argv[]) {
-  Connection connection("127.0.0.1", 1410);
-  connection.send();
-  std::cout << "Something's happening" << std::endl;
+  try {
+    Connection connection("127.0.0.1", 1410);
+    std::string s = {"This is mine message!"};
+    std::vector<uint8_t> data(s.begin(), s.end());
+
+    connection.publish(data, "SOME_QUEUE");
+  } catch (PostmanException e) {
+    std::cout << e.what() << std::endl;
+  }
+
   return 0;
 }
