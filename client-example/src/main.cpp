@@ -1,5 +1,4 @@
 #include <postman/Connection.h>
-#include <postman/Message.h>
 #include <postman/PostmanException.h>
 #include <iostream>
 

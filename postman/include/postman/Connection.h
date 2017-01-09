@@ -1,8 +1,8 @@
 #ifndef CONNECTION_H
 #define CONNECTION_H
 
-#include <postman/Message.h>
 #include <string>
+#include <vector>
 
 class Connection {
  private:
