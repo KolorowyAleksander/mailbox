@@ -12,6 +12,8 @@
 class ConnectionReciever {
  public:
   ConnectionReciever(int socket, sockaddr_in addr);
+  ConnectionReciever(ConnectionReciever &&other);
+  ConnectionReciever &operator=(ConnectionReciever &&other);
   void operator()();
 
  private:
