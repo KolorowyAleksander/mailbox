@@ -1,5 +1,6 @@
 #include <ConnectionReciever.h>
 #include <SimpleLogger.h>
+#include <postman/MessageTag.h>
 
 #include <arpa/inet.h>
 #include <unistd.h>
@@ -48,6 +49,8 @@ void ConnectionReciever::operator()() {
   }
 
   std::string message(buffer.begin(), buffer.begin() + size);
-  logger::log.info("Recieved: " + std::to_string(tag) + " message, size: " +
-                   std::to_string(size) + " " + message);
+  if (tag == static_cast<uint8_t>(MessageTag::message)) {
+    //we know that we handle message here!
+    logger::log.info("Recieved message! It says: " + message);
+  }
 }

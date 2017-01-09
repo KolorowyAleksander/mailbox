@@ -1,4 +1,5 @@
 #include <postman/Connection.h>
+#include <postman/MessageTag.h>
 #include <postman/PostmanConnectionException.h>
 
 #include <arpa/inet.h>
@@ -26,7 +27,7 @@ Connection::Connection(std::string host, int port) : _port{port}, _host{host} {
 Connection::~Connection() { close(_socket); }
 
 void Connection::publish(std::vector<uint8_t> data, std::string bindingKey) {
-  uint8_t tag = 06;
+  uint8_t tag = static_cast<uint8_t>(MessageTag::message);
   uint64_t messageSize = data.size();
   try {
     if (write(_socket, &tag, 1) < 0) {
