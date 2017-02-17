@@ -24,6 +24,10 @@ ConnectionReciever::ConnectionReciever(ConnectionReciever &&other)
       _host{std::move(other._host)},
       _port{other._port} {}
 
+ConnectionReciever::~ConnectionReciever() {
+  close(_socket);
+}
+
 ConnectionReciever &ConnectionReciever::operator=(ConnectionReciever &&other) {
   _socket = other._socket;
   _host = std::move(other._host);
