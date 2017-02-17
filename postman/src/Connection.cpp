@@ -30,6 +30,14 @@ Connection::Connection(std::string host, int port) : _port{port}, _host{host} {
 Connection::~Connection() { close(_socket); }
 
 void Connection::publish(std::vector<uint8_t> data, std::string routingKey) {
+  /*
+   * Now this is required, cause if you don't include it, congestion control(?)
+   * will kill your socket and you end up with a bad memory corrupton
+   * Normally you should propably keep this to library user (or maybe not)
+   * basically you end up ddosing yourself kindof
+   */
+  usleep(1000);
+
   // big TODO: also everything in one piece!
   // TODO: sned routing key along with message
   // TODO: block sending if queue is not bound to connection on this side

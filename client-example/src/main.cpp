@@ -12,7 +12,7 @@ int main(int argc, char* argv[]) {
     connection.queueDeclare("name", "lele", true, true);
     while(true) {
       connection.publish(data, "lele");
-      usleep(100);
+      usleep(1000);
     }
 
   } catch (PostmanException e) {
