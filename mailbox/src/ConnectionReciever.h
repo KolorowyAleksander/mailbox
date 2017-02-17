@@ -1,8 +1,11 @@
 #ifndef CONNECTION_RECIEVER_H
 #define CONNECTION_RECIEVER_H
 
+#include <Queue.h>
+
 #include <netinet/in.h>
 #include <sys/socket.h>
+#include <memory>
 #include <string>
 
 /*
@@ -20,6 +23,7 @@ class ConnectionReciever {
   int _socket;  // connected socket file descriptor
   std::string _host;
   int _port;
+  std::shared_ptr<Queue> _queue;
 };
 
 #endif  // CONNECTION_RECIEVER_H

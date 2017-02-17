@@ -13,7 +13,9 @@ class Connection {
  public:
   Connection(std::string host, int port);
   ~Connection();
-  void publish(std::vector<uint8_t> data, std::string bindingKey);
+  void publish(std::vector<uint8_t> data, std::string routingKey);
+  void queueDeclare(std::string name, std::string bindingKey, bool persistence,
+                    bool durability);
   void recieve();
   void ack();
 };
