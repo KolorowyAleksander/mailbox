@@ -12,6 +12,6 @@ void Queue::publish(std::vector<uint8_t> message) {
   // TODO: maybe queue should be a friend funtion for manager?
 }
 
-void Queue::collect() {
+std::vector<uint8_t> Queue::collect() {
   // TODO: get the next message from queue
 }
