@@ -72,6 +72,7 @@ void Connection::publish(std::vector<uint8_t> data, std::string routingKey) {
 
 std::vector<uint8_t> Connection::collect() {
   // TODO: pulling messages
+  // TODO: check if queue is declared!
 }
 
 void Connection::ack() {
