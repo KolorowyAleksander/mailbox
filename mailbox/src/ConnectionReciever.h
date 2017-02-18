@@ -20,6 +20,11 @@ class ConnectionReciever {
   std::string _host;
   int _port;
   std::shared_ptr<Queue> _queue;
+
+  void handleMessageDelivery();
+  void handleMessageCollection();
+  void handleQueueDeclaration();
+  void handleQueueBinding();
 };
 
 #endif  // CONNECTION_RECIEVER_H

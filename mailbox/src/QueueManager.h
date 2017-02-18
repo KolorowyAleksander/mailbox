@@ -10,9 +10,11 @@
 class QueueManager {
  public:
   QueueManager();
-  std::shared_ptr<Queue> queueInit(std::string name, std::string bindingKey,
-                                   bool persistence, bool durability);
+
   void publish(std::string routing_key, std::vector<uint8_t> message);
+  std::shared_ptr<Queue> queueBinding(std::string name);
+  void queueInit(std::string name, std::string bindingKey, bool persistence,
+                 bool durability);
 
  private:
   std::unordered_map<std::string, std::shared_ptr<Queue> > _queues;
