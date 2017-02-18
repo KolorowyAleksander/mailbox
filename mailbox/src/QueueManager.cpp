@@ -5,9 +5,8 @@
 QueueManager manager;
 
 QueueManager::QueueManager() {
-  // TODO:
-  // read persistent queues to read here
-  // also what about durability
+  // TODO: read persistent queues to read here
+  // TODO: a mapping to binding
 }
 
 void QueueManager::publish(std::string routing_key,
@@ -25,8 +24,7 @@ std::shared_ptr<Queue> QueueManager::queueBinding(std::string name) {
 void QueueManager::queueInit(std::string name, std::string bindingKey,
                              bool persistence, bool durability) {
   // TODO: check if queue exists first
-  // TODO: a mapping to binding
-  // TODO: handle errors when creating this
+  // TODO: handle errors when creating queues
   logger::log.info("New queue declared: " + name + ",  " + bindingKey + ", " +
                    std::to_string(persistence) + std::to_string(durability));
   _mutex.lock();
