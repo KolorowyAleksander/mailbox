@@ -14,12 +14,11 @@ int main(int argc, char* argv[]) {
       connection.publish(data, "lele");
     }
 
-
     connection.queueBind("name");
     for (int i = 0; i < 10; i++) {
       std::vector<uint8_t> res = connection.collect();
       std::string b(res.begin(), res.end());
-      std::cout << b <<std::endl;
+      std::cout << b << std::endl;
     }
 
   } catch (PostmanException e) {
