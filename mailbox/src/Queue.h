@@ -14,7 +14,7 @@ class Queue {
   // persistence
   // durability
   // disposing messages between workers
-  // concurrency control
+  // concurrency control (?)
 };
 
 #endif  // QUEUE_H

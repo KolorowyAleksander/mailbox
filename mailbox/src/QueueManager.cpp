@@ -15,6 +15,7 @@ std::shared_ptr<Queue> QueueManager::queueInit(std::string name,
                                                bool persistence,
                                                bool durability) {
   // TODO: check if queue exists first
+  // TODO: a mapping to binding key
   logger::log.info("New queue declared: " + name + ",  " + bindingKey + ", " +
                    std::to_string(persistence) + std::to_string(durability));
   _mutex.lock();

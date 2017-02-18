@@ -8,9 +8,6 @@
 #include <memory>
 #include <string>
 
-/*
- * a connection reciever class - we use it to run a new thread with state inside
- */
 
 class ConnectionReciever {
  public:
@@ -20,7 +17,7 @@ class ConnectionReciever {
   void operator()();
 
  private:
-  int _socket;  // connected socket file descriptor
+  int _socket;
   std::string _host;
   int _port;
   std::shared_ptr<Queue> _queue;

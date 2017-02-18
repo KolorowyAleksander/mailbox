@@ -33,6 +33,7 @@ ConnectionReciever &ConnectionReciever::operator=(ConnectionReciever &&other) {
 
 void ConnectionReciever::operator()() {
   // TODO: handle different cases depending on tag
+  // TODO: split into logical methods
   // big TODO: assert that proper number of bytes is read
   // big TODO: handle whole deliveries in one go
   logger::log.info("New connection from: " + _host + " on " +
