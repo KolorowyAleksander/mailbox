@@ -16,6 +16,7 @@
  * Message is:
  * 1B tag
  * 8B message size
+ * 255B routing key
  * size B message
  */
 

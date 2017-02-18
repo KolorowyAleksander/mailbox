@@ -12,7 +12,7 @@
 #include <iostream>
 
 const int queueNameSize = 255;
-const int bindingKeySize = 255;
+const int keySize = 255;
 
 ConnectionReciever::ConnectionReciever(int socket, sockaddr_in addr)
     : _socket{socket},
@@ -53,13 +53,20 @@ void ConnectionReciever::operator()() {
     switch (MessageTag(tag)) {
       case MessageTag::message: {
         uint64_t size;
+        std::string routingKey;
+        routingKey.resize(keySize);
         if (read(_socket, &size, 8) < 0) {
           logger::log.error("Error while reading size from socket!", errno);
           return;
         }
+        if (read(_socket, &routingKey[0], keySize) < 0) {
+          logger::log.error("Error while reading key from socket!", errno);
+          return;
+        }
+        routingKey.shrink_to_fit();
         std::vector<uint8_t> buffer;
         buffer.resize(size);
-        if (read(_socket, &buffer[0], 100) < 0) {
+        if (read(_socket, &buffer[0], size) < 0) {
           logger::log.error("Error while reading from socket!", errno);
           return;
         }
@@ -77,7 +84,7 @@ void ConnectionReciever::operator()() {
           std::string name;
           name.resize(queueNameSize);
           std::string bindingKey;
-          bindingKey.resize(bindingKeySize);
+          bindingKey.resize(keySize);
           bool persistence;
           bool durability;
 
@@ -99,7 +106,7 @@ void ConnectionReciever::operator()() {
             return;
           }
 
-          if (read(_socket, &bindingKey[0], bindingKeySize) < 255) {
+          if (read(_socket, &bindingKey[0], keySize) < 255) {
             logger::log.error("Error while reading size from socket!", errno);
             return;
           }
