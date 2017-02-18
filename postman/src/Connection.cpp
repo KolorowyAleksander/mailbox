@@ -15,7 +15,8 @@
 const int queueNameSize = 255;
 const int keySize = 255;
 
-Connection::Connection(std::string host, int port) : _port{port}, _host{host}, _isBound(false) {
+Connection::Connection(std::string host, int port)
+    : _port{port}, _host{host}, _isBound(false) {
   if ((_socket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0) {
     throw PostmanConnectionException("Cannot create socket.");
   }
@@ -38,7 +39,7 @@ void Connection::publish(std::vector<uint8_t> data, std::string routingKey) {
    * will kill your socket and you end up with a bad memory corrupton
    * This is a minor hack. Should be removed when there is a consumer/producer.
    */
-  //usleep(1000);  // that is a thousand microseconds
+  // usleep(1000);  // that is a thousand microseconds
 
   uint8_t tag = static_cast<uint8_t>(MessageTag::message);
   uint64_t messageSize = data.size();
@@ -71,7 +72,7 @@ void Connection::publish(std::vector<uint8_t> data, std::string routingKey) {
 }
 
 std::vector<uint8_t> Connection::collect() {
-  if(!this->_isBound) {
+  if (!this->_isBound) {
     throw PostmanConnectionException("Queue is not bound!");
   }
 
@@ -175,7 +176,6 @@ void Connection::queueDeclare(std::string name, std::string bindingKey,
     if (write(_socket, &bindingKey[0], keySize) < 0) {
       throw PostmanConnectionException("Cannot publish message.");
     }
-
 
     uint8_t tag;
     int result = read(_socket, &tag, 1);
