@@ -50,6 +50,7 @@ void ConnectionReciever::operator()() {
           handleMessageDelivery();
           break;
         case MessageTag::collect:
+          handleMessageCollection();
         break;
         case MessageTag::queueBind:
           handleQueueBinding();
@@ -94,7 +95,26 @@ void ConnectionReciever::handleMessageDelivery() {
   manager.publish(routingKey, std::move(buffer));
 }
 
-void ConnectionReciever::handleMessageCollection() {}
+void ConnectionReciever::handleMessageCollection() {
+  // TODO: wait for acknowledgement
+  if(!_queue) {
+    logger::log.error("Recieved read while queue not bound!", errno);
+    return;
+  }
+
+  std::vector<uint8_t> message = _queue->collect();
+  uint64_t size = message.size();
+
+  if (write(_socket, &size, 8) < 0) {
+    logger::log.error("Failed to send size!", errno);
+    return;
+  }
+
+  if (write(_socket, &message[0], size) < 0) {
+    logger::log.error("Failed to send message!", errno);
+    return;
+  }
+}
 
 void ConnectionReciever::handleQueueBinding() {
   std::string name;
@@ -106,7 +126,18 @@ void ConnectionReciever::handleQueueBinding() {
   }
 
   name.shrink_to_fit();
-  _queue = manager.queueBinding(name);
+
+  uint8_t tag;
+  if ((_queue = manager.queueBinding(name))) {
+    tag = static_cast<uint8_t>(MessageTag::ack);
+  } else {
+    tag = static_cast<uint8_t>(MessageTag::rej);
+  }
+
+  if(write(_socket, &tag, 1) < 0) {
+    logger::log.error("Failed to send queue ack or rej!", errno);
+    return;
+  }
 }
 
 void ConnectionReciever::handleQueueDeclaration() {
@@ -142,4 +173,10 @@ void ConnectionReciever::handleQueueDeclaration() {
   name.shrink_to_fit();
   bindingKey.shrink_to_fit();
   manager.queueInit(name, bindingKey, persistence, durability);
+
+  uint8_t tag = static_cast<uint8_t>(MessageTag::ack);
+  if (write(_socket, &tag, 1) < 0) {
+    logger::log.error("Failed to acknowledge queue declaration!", errno);
+    return;
+  }
 }
