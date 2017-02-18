@@ -1,6 +1,9 @@
 #include <QueueManager.h>
 #include <SimpleLogger.h>
-#include <iostream>
+#include <utilities.h>
+#include <algorithm>
+#include <algorithm>
+#include <sstream>
 
 QueueManager manager;
 
@@ -9,26 +12,39 @@ QueueManager::QueueManager() {
   // TODO: a mapping to binding
 }
 
-void QueueManager::publish(std::string routing_key,
+void QueueManager::publish(std::string routingKey,
                            std::vector<uint8_t> message) {
-  logger::log.info("A message was published with key " + routing_key + ", " +
-                   std::string(message.begin(), message.end()));
-  // TODO: find all the queues and publish your message
+  for (auto& i : _queueBindings) {
+    if (utilities::matching(routingKey, i.second)) {
+      _queues[i.first]->publish(std::move(message));
+    }
+  }
 }
 
 std::shared_ptr<Queue> QueueManager::queueBinding(std::string name) {
-  // TODO: handle errors
-  return _queues.find(name)->second;
+  auto result = _queues.find(name);
+  return result == _queues.end() ? nullptr : result->second;
 }
 
-void QueueManager::queueInit(std::string name, std::string bindingKey,
-                             bool persistence, bool durability) {
-  // TODO: check if queue exists first
-  // TODO: handle errors when creating queues
-  logger::log.info("New queue declared: " + name + ",  " + bindingKey + ", " +
-                   std::to_string(persistence) + std::to_string(durability));
+int QueueManager::queueInit(std::string name, std::string bindingKey,
+                            bool persistence, bool durability) {
+  auto result =
+      std::find_if(_queueBindings.begin(), _queueBindings.end(),
+                   [name](const std::pair<std::string, std::string>& element) {
+                     return element.first == name;
+                   });
+
+  if (result != _queueBindings.end()) {
+    logger::log.error("The queue with name " + name + " already exists");
+    return -1;
+  }
+
+  logger::log.info("New queue declared: " + name + ", " + bindingKey);
+
   _mutex.lock();
-  _queues.insert({name, std::shared_ptr<Queue>(
-                            new Queue(bindingKey, persistence, durability))});
+  _queues[name] =
+      std::shared_ptr<Queue>(new Queue(bindingKey, persistence, durability));
+  _queueBindings.push_back({name, bindingKey});
   _mutex.unlock();
+  return 0;
 }

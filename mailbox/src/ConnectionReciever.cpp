@@ -51,10 +51,10 @@ void ConnectionReciever::operator()() {
           break;
         case MessageTag::collect:
           handleMessageCollection();
-        break;
+          break;
         case MessageTag::queueBind:
           handleQueueBinding();
-        break;
+          break;
         case MessageTag::queueDeclare:
           handleQueueDeclaration();
           break;
@@ -96,8 +96,8 @@ void ConnectionReciever::handleMessageDelivery() {
 }
 
 void ConnectionReciever::handleMessageCollection() {
-  // TODO: wait for acknowledgement
-  if(!_queue) {
+  // TODO: wait for acknowledgement maybe
+  if (!_queue) {
     logger::log.error("Recieved read while queue not bound!", errno);
     return;
   }
@@ -134,7 +134,7 @@ void ConnectionReciever::handleQueueBinding() {
     tag = static_cast<uint8_t>(MessageTag::rej);
   }
 
-  if(write(_socket, &tag, 1) < 0) {
+  if (write(_socket, &tag, 1) < 0) {
     logger::log.error("Failed to send queue ack or rej!", errno);
     return;
   }
@@ -172,9 +172,13 @@ void ConnectionReciever::handleQueueDeclaration() {
 
   name.shrink_to_fit();
   bindingKey.shrink_to_fit();
-  manager.queueInit(name, bindingKey, persistence, durability);
+  uint8_t tag;
+  if (manager.queueInit(name, bindingKey, persistence, durability < 0)) {
+    tag = static_cast<uint8_t>(MessageTag::rej);
+  } else {
+    tag = static_cast<uint8_t>(MessageTag::ack);
+  }
 
-  uint8_t tag = static_cast<uint8_t>(MessageTag::ack);
   if (write(_socket, &tag, 1) < 0) {
     logger::log.error("Failed to acknowledge queue declaration!", errno);
     return;

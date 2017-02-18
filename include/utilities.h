@@ -46,6 +46,9 @@ bool matching(std::string routingKey, std::string bindingKey) {
               return true;
             }
             if (primary[i + 1] == "*") {
+              if(i+1 == primary.size()-1){
+                return true;
+              }
               i++;
               current_matching += 2;
             }
