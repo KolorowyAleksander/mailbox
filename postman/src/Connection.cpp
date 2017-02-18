@@ -38,14 +38,13 @@ void Connection::publish(std::vector<uint8_t> data, std::string routingKey) {
    * will kill your socket and you end up with a bad memory corrupton
    * This is a minor hack. Should be removed when there is a consumer/producer.
    */
-  usleep(1000); // that is a thousand microseconds
+  usleep(1000);  // that is a thousand microseconds
 
   uint8_t tag = static_cast<uint8_t>(MessageTag::message);
   uint64_t messageSize = data.size();
   if (routingKey.size() > keySize) {
     throw PostmanConnectionException("Routing key must be less than " +
-                                     std::to_string(keySize) +
-                                     " characters.");
+                                     std::to_string(keySize) + " characters.");
   }
 
   routingKey.resize(keySize);
@@ -72,11 +71,11 @@ void Connection::publish(std::vector<uint8_t> data, std::string routingKey) {
 }
 
 std::vector<uint8_t> Connection::collect() {
-  //TODO: pulling messages
+  // TODO: pulling messages
 }
 
 void Connection::ack() {
-  //TODO: decide if this is even needed
+  // TODO: decide if this is even needed
 }
 
 void Connection::queueBind(std::string name) {
@@ -121,8 +120,7 @@ void Connection::queueDeclare(std::string name, std::string bindingKey,
 
   if (bindingKey.size() > keySize) {
     throw PostmanConnectionException("Key must be less than " +
-                                     std::to_string(keySize) +
-                                     " characters.");
+                                     std::to_string(keySize) + " characters.");
   }
 
   name.resize(queueNameSize);

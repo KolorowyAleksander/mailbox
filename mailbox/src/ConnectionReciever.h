@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-
 class ConnectionReciever {
  public:
   ConnectionReciever(int socket, sockaddr_in addr);

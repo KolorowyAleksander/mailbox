@@ -1,9 +1,9 @@
 #ifndef CONNECTION_H
 #define CONNECTION_H
 
+#include <memory>
 #include <string>
 #include <vector>
-#include <memory>
 
 class Connection {
  private:
