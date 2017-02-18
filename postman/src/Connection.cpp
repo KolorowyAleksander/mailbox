@@ -13,7 +13,7 @@
 #include <vector>
 
 const int queueNameSize = 255;
-const int bindingKeySize = 255;
+const int keySize = 255;
 
 Connection::Connection(std::string host, int port) : _port{port}, _host{host} {
   if ((_socket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0) {
@@ -30,19 +30,25 @@ Connection::Connection(std::string host, int port) : _port{port}, _host{host} {
 Connection::~Connection() { close(_socket); }
 
 void Connection::publish(std::vector<uint8_t> data, std::string routingKey) {
+  // big TODO: also everything in one piece!
+  // TODO: validate routing key
+
   /*
    * Now this is required, cause if you don't include it, congestion control(?)
    * will kill your socket and you end up with a bad memory corrupton
-   * Normally you should propably keep this to library user (or maybe not)
-   * basically you end up ddosing yourself kindof
+   * This is a minor hack. Should be removed when there is a consumer/producer.
    */
-  usleep(1000);
+  usleep(1000); // that is a thousand microseconds
 
-  // big TODO: also everything in one piece!
-  // TODO: sned routing key along with message
-  // TODO: block sending if queue is not bound to connection on this side
   uint8_t tag = static_cast<uint8_t>(MessageTag::message);
   uint64_t messageSize = data.size();
+  if (routingKey.size() > keySize) {
+    throw PostmanConnectionException("Routing key must be less than " +
+                                     std::to_string(keySize) +
+                                     " characters.");
+  }
+
+  routingKey.resize(keySize);
   try {
     if (write(_socket, &tag, 1) < 0) {
       throw PostmanConnectionException("Cannot publish message tag.");
@@ -50,6 +56,10 @@ void Connection::publish(std::vector<uint8_t> data, std::string routingKey) {
 
     if (write(_socket, &messageSize, 8) < 0) {
       throw PostmanConnectionException("Cannot publish message size.");
+    }
+
+    if (write(_socket, &routingKey[0], 255) < 0) {
+      throw PostmanConnectionException("Cannot publish message routing key.");
     }
 
     if (write(_socket, &data[0], data.size()) < 0) {
@@ -61,27 +71,62 @@ void Connection::publish(std::vector<uint8_t> data, std::string routingKey) {
   }
 }
 
-void Connection::queueDeclare(std::string name, std::string bindingKey,
-                              bool persistence, bool durability) {
-  // big TODO: send everything in one piece!
-  uint8_t tag = static_cast<uint8_t>(MessageTag::queueDeclare);
-  uint8_t per = persistence;
-  uint8_t dur = durability;
+std::vector<uint8_t> Connection::collect() {
+  //TODO: pulling messages
+}
 
-  if (name.size() > 255) {
+void Connection::ack() {
+  //TODO: decide if this is even needed
+}
+
+void Connection::queueBind(std::string name) {
+  // big TODO: send everything in one piece!
+  // TODO: check broker if queue exists
+  uint8_t tag = static_cast<uint8_t>(MessageTag::queueBind);
+  if (name.size() > queueNameSize) {
     throw PostmanConnectionException("Name must be less than " +
                                      std::to_string(queueNameSize) +
                                      " characters.");
   }
 
-  if (bindingKey.size() > 255) {
+  name.resize(queueNameSize);
+  try {
+    if (write(_socket, &tag, 1) < 0) {
+      throw PostmanConnectionException("Cannot send binding tag.");
+    }
+
+    if (write(_socket, &name[0], queueNameSize) < 0) {
+      throw PostmanConnectionException("Cannot send bind name.");
+    }
+  } catch (PostmanConnectionException e) {
+    close(_socket);
+    throw PostmanConnectionException("Cannot publish message");
+  }
+}
+
+void Connection::queueDeclare(std::string name, std::string bindingKey,
+                              bool persistence, bool durability) {
+  // big TODO: send everything in one piece!
+  // TODO: validate the binding key and name to be valuable
+  // TODO: check for answear from broker if queue was created
+  uint8_t tag = static_cast<uint8_t>(MessageTag::queueDeclare);
+  uint8_t per = persistence;
+  uint8_t dur = durability;
+
+  if (name.size() > queueNameSize) {
+    throw PostmanConnectionException("Name must be less than " +
+                                     std::to_string(queueNameSize) +
+                                     " characters.");
+  }
+
+  if (bindingKey.size() > keySize) {
     throw PostmanConnectionException("Key must be less than " +
-                                     std::to_string(bindingKeySize) +
+                                     std::to_string(keySize) +
                                      " characters.");
   }
 
   name.resize(queueNameSize);
-  bindingKey.resize(bindingKeySize);
+  bindingKey.resize(keySize);
 
   try {
     if (write(_socket, &tag, 1) < 0) {
@@ -100,7 +145,7 @@ void Connection::queueDeclare(std::string name, std::string bindingKey,
       throw PostmanConnectionException("Cannot send declaration name.");
     }
 
-    if (write(_socket, &bindingKey[0], bindingKeySize) < 0) {
+    if (write(_socket, &bindingKey[0], keySize) < 0) {
       throw PostmanConnectionException("Cannot publish message.");
     }
   } catch (PostmanConnectionException e) {
@@ -108,7 +153,3 @@ void Connection::queueDeclare(std::string name, std::string bindingKey,
     throw PostmanConnectionException("Cannot publish message");
   }
 }
-
-void Connection::collect() {}
-
-void Connection::ack() {}
