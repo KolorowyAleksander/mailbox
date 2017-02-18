@@ -8,9 +8,11 @@
  * 1B durability flag,
  * 255 B name,
  * 255 B bindingKey
- */
-
-/*
+ *
+ * Queue bind message is:
+ * 1B tag,
+ * 255B name
+ *
  * Message is:
  * 1B tag
  * 8B message size
@@ -18,18 +20,12 @@
  */
 
 enum class MessageTag : uint8_t {
-  acknowledge = 03,
-  queueDeclare = 05,
-  message = 06,
-  recieve = 07
+  queueDeclare = 01,
+  queueBind = 02,
+  ack = 03,
+  rej = 04,
+  collect = 05,
+  message = 06
 };
-
-// TODO: decide if this will ever be needed
-// template <typename Enumeration>
-// auto as_integer(Enumeration const value) ->
-//     typename std::underlying_type<Enumeration>::type {
-//   return static_cast<typename
-//   std::underlying_type<Enumeration>::type>(value);
-// }
 
 #endif  // MESSAGE_TAG_H

@@ -1,7 +1,7 @@
 #include <postman/Connection.h>
 #include <postman/PostmanException.h>
-#include <iostream>
 #include <unistd.h>
+#include <iostream>
 
 int main(int argc, char* argv[]) {
   try {
@@ -10,9 +10,8 @@ int main(int argc, char* argv[]) {
     std::vector<uint8_t> data(s.begin(), s.end());
 
     connection.queueDeclare("name", "lele", true, true);
-    while(true) {
+    while (true) {
       connection.publish(data, "lele");
-      usleep(1000);
     }
 
   } catch (PostmanException e) {

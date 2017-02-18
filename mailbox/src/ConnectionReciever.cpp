@@ -38,8 +38,6 @@ void ConnectionReciever::operator()() {
   logger::log.info("New connection from: " + _host + " on " +
                    std::to_string(_port));
 
-
-
   while (true) {
     uint8_t tag;
     int recieved = read(_socket, &tag, 1);

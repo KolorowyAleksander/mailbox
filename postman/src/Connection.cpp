@@ -109,6 +109,6 @@ void Connection::queueDeclare(std::string name, std::string bindingKey,
   }
 }
 
-void Connection::recieve() {}
+void Connection::collect() {}
 
 void Connection::ack() {}
