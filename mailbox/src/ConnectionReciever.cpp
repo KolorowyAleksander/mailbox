@@ -33,7 +33,7 @@ ConnectionReciever &ConnectionReciever::operator=(ConnectionReciever &&other) {
 
 void ConnectionReciever::operator()() {
   // big TODO: assert that proper number of bytes is read
-  // big TODO: handle whole deliveries in one go
+  // big TODO: handle whole deliveries in one go (?)
   logger::log.info("New connection from: " + _host + " on " +
                    std::to_string(_port));
 
@@ -172,12 +172,8 @@ void ConnectionReciever::handleQueueDeclaration() {
 
   name.shrink_to_fit();
   bindingKey.shrink_to_fit();
-  uint8_t tag;
-  if (manager.queueInit(name, bindingKey, persistence, durability < 0)) {
-    tag = static_cast<uint8_t>(MessageTag::rej);
-  } else {
-    tag = static_cast<uint8_t>(MessageTag::ack);
-  }
+  uint8_t tag = static_cast<uint8_t>(MessageTag::ack);
+  manager.queueInit(name, bindingKey, persistence, durability < 0);
 
   if (write(_socket, &tag, 1) < 0) {
     logger::log.error("Failed to acknowledge queue declaration!", errno);

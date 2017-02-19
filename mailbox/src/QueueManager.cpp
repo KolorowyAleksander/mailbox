@@ -9,7 +9,6 @@ QueueManager manager;
 
 QueueManager::QueueManager() {
   // TODO: read persistent queues to read here
-  // TODO: a mapping to binding
 }
 
 void QueueManager::publish(std::string routingKey,

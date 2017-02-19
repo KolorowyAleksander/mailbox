@@ -37,13 +37,6 @@ class Connection {
   std::vector<uint8_t> collect();
 
   /*
-   * Acknowledge the message has been recieved.
-   * If there is no acknowledgement, the broker will requeue the message,
-   * treating it as if it was never delivered.
-   */
-  void ack();
-
-  /*
    * Binds the connection to a queue on the broker.
    * This is only required to recieve messages, messages are sent to exchange
    * instead.

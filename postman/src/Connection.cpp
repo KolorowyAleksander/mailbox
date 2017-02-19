@@ -34,13 +34,6 @@ void Connection::publish(std::vector<uint8_t> data, std::string routingKey) {
   // big TODO: also everything in one piece!
   // TODO: validate routing key
 
-  /*
-   * Now this is required, cause if you don't include it, congestion control(?)
-   * will kill your socket and you end up with a bad memory corrupton
-   * This is a minor hack. Should be removed when there is a consumer/producer.
-   */
-  // usleep(1000);  // that is a thousand microseconds
-
   uint8_t tag = static_cast<uint8_t>(MessageTag::message);
   uint64_t messageSize = data.size();
   if (routingKey.size() > keySize) {
@@ -72,6 +65,7 @@ void Connection::publish(std::vector<uint8_t> data, std::string routingKey) {
 }
 
 std::vector<uint8_t> Connection::collect() {
+  // TODO: handle ack
   if (!this->_isBound) {
     throw PostmanConnectionException("Queue is not bound!");
   }
@@ -93,10 +87,6 @@ std::vector<uint8_t> Connection::collect() {
   }
 
   return std::move(message);
-}
-
-void Connection::ack() {
-  // TODO: decide if this is even needed
 }
 
 void Connection::queueBind(std::string name) {
@@ -137,7 +127,6 @@ void Connection::queueDeclare(std::string name, std::string bindingKey,
                               bool persistence, bool durability) {
   // big TODO: send everything in one piece!
   // TODO: validate the binding key and name to be valuable
-  // TODO: check for answear from broker if queue was created
   uint8_t tag = static_cast<uint8_t>(MessageTag::queueDeclare);
   uint8_t per = persistence;
   uint8_t dur = durability;
@@ -184,9 +173,7 @@ void Connection::queueDeclare(std::string name, std::string bindingKey,
       throw PostmanConnectionException("Error recieving declare respnonse.");
     }
 
-    if (MessageTag(tag) == MessageTag::ack) {
-      // TODO: handle success?
-    } else {
+    if (MessageTag(tag) != MessageTag::ack) {
       throw PostmanConnectionException("Error recieving declare.");
     }
 
