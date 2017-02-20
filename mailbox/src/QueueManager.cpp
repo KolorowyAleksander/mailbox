@@ -1,11 +1,13 @@
 #include <QueueManager.h>
 #include <SimpleLogger.h>
 #include <utilities.h>
+
 #include <algorithm>
-#include <algorithm>
+#include <iostream>
 #include <sstream>
 
 QueueManager manager;
+
 
 QueueManager::QueueManager() {
   // TODO: read persistent queues to read here

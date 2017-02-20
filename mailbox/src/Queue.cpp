@@ -1,7 +1,6 @@
 #include <Queue.h>
 #include <SimpleLogger.h>
 
-
 Queue::Queue(std::string bindingKey, bool persistence, bool durability) {
   // TODO: messages durability
 }

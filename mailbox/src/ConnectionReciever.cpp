@@ -33,7 +33,6 @@ ConnectionReciever &ConnectionReciever::operator=(ConnectionReciever &&other) {
 
 void ConnectionReciever::operator()() {
   // big TODO: assert that proper number of bytes is read
-  // big TODO: handle whole deliveries in one go (?)
   logger::log.info("New connection from: " + _host + " on " +
                    std::to_string(_port));
 
@@ -96,7 +95,7 @@ void ConnectionReciever::handleMessageDelivery() {
 }
 
 void ConnectionReciever::handleMessageCollection() {
-  // TODO: wait for acknowledgement maybe
+  // TODO: wait for acknowledgement maybe (?)
   if (!_queue) {
     logger::log.error("Recieved read while queue not bound!", errno);
     return;

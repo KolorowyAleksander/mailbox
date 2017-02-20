@@ -10,11 +10,14 @@
 #include <cerrno>
 #include <cstring>
 #include <iostream>
+#include <regex>
 #include <string>
 #include <vector>
 
 const int queueNameSize = 255;
 const int keySize = 255;
+const std::regex routingKeyPattern("\\w+(\\.\\w+)*");
+const std::regex bindingKeyPattern("(\\w+|\\*|\\#)(\\.(\\w+|\\*|\\#))*");
 
 Connection::Connection(std::string host, int port)
     : _port{port}, _host{host}, _isBound(false) {
@@ -32,10 +35,13 @@ Connection::Connection(std::string host, int port)
 Connection::~Connection() { close(_socket); }
 
 void Connection::publish(std::vector<uint8_t> data, std::string routingKey) {
-  // TODO: validate routing key
-
   uint8_t tag = static_cast<uint8_t>(MessageTag::message);
   uint64_t messageSize = data.size();
+
+  if (!std::regex_match(routingKey, routingKeyPattern)) {
+    throw PostmanConnectionException("Invalid routing key");
+  }
+
   if (routingKey.size() > keySize) {
     throw PostmanConnectionException("Routing key must be less than " +
                                      std::to_string(keySize) + " characters.");
@@ -60,7 +66,7 @@ void Connection::publish(std::vector<uint8_t> data, std::string routingKey) {
 }
 
 std::vector<uint8_t> Connection::collect() {
-  // TODO: handle ack
+  // TODO: handle ack (?)
   if (!this->_isBound) {
     throw PostmanConnectionException("Queue is not bound!");
   }
@@ -114,10 +120,9 @@ void Connection::queueBind(std::string name) {
 
 void Connection::queueDeclare(std::string name, std::string bindingKey,
                               bool persistence, bool durability) {
-  // TODO: validate the binding key and name to be valuable
-  uint8_t tag = static_cast<uint8_t>(MessageTag::queueDeclare);
-  uint8_t per = persistence;
-  uint8_t dur = durability;
+  if (!std::regex_match(bindingKey, bindingKeyPattern)) {
+    throw PostmanConnectionException("Binding key is wrong!");
+  }
 
   if (name.size() > queueNameSize) {
     throw PostmanConnectionException("Name must be less than " +
@@ -129,6 +134,10 @@ void Connection::queueDeclare(std::string name, std::string bindingKey,
     throw PostmanConnectionException("Key must be less than " +
                                      std::to_string(keySize) + " characters.");
   }
+
+  uint8_t tag = static_cast<uint8_t>(MessageTag::queueDeclare);
+  uint8_t per = persistence;
+  uint8_t dur = durability;
 
   name.resize(queueNameSize);
   bindingKey.resize(keySize);

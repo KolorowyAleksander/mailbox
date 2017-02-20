@@ -5,13 +5,14 @@
 
 int main(int argc, char* argv[]) {
   try {
+    // TODO: other ip adress!
     Connection connection("127.0.0.1", 1410);
     std::string s = {"This is mine message!"};
     std::vector<uint8_t> data(s.begin(), s.end());
 
-    connection.queueDeclare("name", "lele", true, true);
+    connection.queueDeclare("name", "lele.trele.morele", true, true);
     for (int i = 0; i < 10; i++) {
-      connection.publish(data, "lele");
+      connection.publish(data, "lele.trele.morele");
     }
 
     connection.queueBind("name");

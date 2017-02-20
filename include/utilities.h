@@ -8,6 +8,7 @@
 #include <vector>
 
 namespace utilities {
+
 std::vector<std::string> split(const std::string& s, char delim) {
   std::vector<std::string> result;
   std::stringstream ss;
@@ -19,9 +20,9 @@ std::vector<std::string> split(const std::string& s, char delim) {
   return result;
 }
 
-bool matching(std::string routingKey, std::string bindingKey) {
-  std::vector<std::string> primary = split(bindingKey, '.');
-  std::vector<std::string> matching = split(routingKey, '.');
+bool matching(std::string matchingKey, std::string primaryKey) {
+  std::vector<std::string> primary = utilities::split(primaryKey, '.');
+  std::vector<std::string> matching = utilities::split(matchingKey, '.');
   if (primary.size() == matching.size()) {  // same size
     for (int i = 0; i < primary.size(); i++) {
       if (primary[i] != matching[i]) {  // primary nd matching do not match
@@ -46,9 +47,6 @@ bool matching(std::string routingKey, std::string bindingKey) {
               return true;
             }
             if (primary[i + 1] == "*") {
-              if(i+1 == primary.size()-1){
-                return true;
-              }
               i++;
               current_matching += 2;
             }
@@ -74,4 +72,5 @@ bool matching(std::string routingKey, std::string bindingKey) {
   return true;
 }
 }
+
 #endif  // UTILITIES_H
