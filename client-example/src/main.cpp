@@ -5,8 +5,7 @@
 
 int main(int argc, char* argv[]) {
   try {
-    // TODO: other ip adress!
-    Connection connection("127.0.0.1", 1410);
+    Connection connection(argv[1], 1410);
     std::string s = {"This is mine message!"};
     std::vector<uint8_t> data(s.begin(), s.end());
 
