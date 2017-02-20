@@ -85,7 +85,6 @@ std::vector<uint8_t> Connection::collect() {
 }
 
 void Connection::queueBind(std::string name) {
-  // big TODO: send everything in one piece!
   uint8_t tag = static_cast<uint8_t>(MessageTag::queueBind);
   if (name.size() > queueNameSize) {
     throw PostmanConnectionException("Name must be less than " +
@@ -102,7 +101,6 @@ void Connection::queueBind(std::string name) {
     throw PostmanConnectionException("Cannot send bind name.");
   }
 
-  uint8_t tag;
   if (read(_socket, &tag, 1) < 0) {
     throw PostmanConnectionException("Didn't recieve tag.");
   }
