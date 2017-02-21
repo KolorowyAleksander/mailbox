@@ -9,7 +9,6 @@
 #include <cerrno>
 #include <vector>
 
-
 const int queueNameSize = 255;
 const int keySize = 255;
 
@@ -39,7 +38,7 @@ void ConnectionReciever::operator()() {
     uint8_t tag;
     int recieved = read(_socket, &tag, 1);
     if (recieved == 0) {
-      logger::log.info("Connection with" + _host + "ended.");
+      logger::log.info("Connection with " + _host + " ended.");
       return;
     }
 

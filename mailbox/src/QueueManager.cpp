@@ -8,7 +8,6 @@
 
 QueueManager manager;
 
-
 QueueManager::QueueManager() {
   // TODO: read persistent queues to read here
 }

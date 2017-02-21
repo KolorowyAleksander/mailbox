@@ -14,9 +14,7 @@ int main(int argc, char* argv[]) {
     connection.queueDeclare("name", "lele.trele.morele", true, true);
     for (int i = 0; i < 10; i++) {
       connection.publish(data, "lele.trele.morele");
-      sleep(1);
     }
-
 
     connection.queueBind("name");
     for (int i = 0; i < 10; i++) {

@@ -18,7 +18,6 @@ const int keySize = 255;
 const std::regex routingKeyPattern("\\w+(\\.\\w+)*");
 const std::regex bindingKeyPattern("(\\w+|\\*|\\#)(\\.(\\w+|\\*|\\#))*");
 
-
 int readFromSocket(int sck, std::vector<uint8_t> &v, unsigned int n) {
   v.resize(n);
   int i, totalRead = 0, toRead = n;
@@ -39,7 +38,7 @@ Connection::Connection(std::string host, int port)
 
   int optval = 1;
   int optlen = sizeof(optval);
-  if(setsockopt(_socket, SOL_SOCKET, SO_KEEPALIVE, &optval, optlen) < 0) {
+  if (setsockopt(_socket, SOL_SOCKET, SO_KEEPALIVE, &optval, optlen) < 0) {
     close(_socket);
     throw PostmanConnectionException("Keepalive failed");
   }
