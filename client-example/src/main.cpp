@@ -207,6 +207,7 @@ int main(int argc, char* argv[]) {
   james.join();
   bond.join();
   miraclePostalWorker.join();
+  annoyingPoster.join();
   reposter.join();
   monkey.join();
   fly.join();
