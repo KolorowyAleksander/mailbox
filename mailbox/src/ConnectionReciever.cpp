@@ -6,11 +6,14 @@
 
 #include <arpa/inet.h>
 #include <unistd.h>
+
 #include <cerrno>
 #include <vector>
 
+
 const int queueNameSize = 255;
 const int keySize = 255;
+
 
 int readFromSocket(int sck, std::vector<uint8_t> &v, unsigned int size) {
   v.resize(size);
@@ -179,6 +182,7 @@ void ConnectionReciever::handleQueueDeclaration() {
   std::string bindingKey(bindingKeyBytes.begin(), bindingKeyBytes.end());
   trim(queueName);
   trim(bindingKey);
+  
   uint8_t tag = static_cast<uint8_t>(MessageTag::ack);
   manager.queueInit(queueName, bindingKey, persistence, durability < 0);
 
