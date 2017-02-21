@@ -15,6 +15,7 @@ class Queue {
  private:
   std::queue<std::vector<uint8_t> > _queue;
   std::mutex _mutex;
+  bool _durability, _persistence;
 };
 
 #endif  // QUEUE_H

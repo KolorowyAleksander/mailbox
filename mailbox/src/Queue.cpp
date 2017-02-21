@@ -1,13 +1,12 @@
 #include <Queue.h>
 #include <SimpleLogger.h>
 
-Queue::Queue(std::string bindingKey, bool persistence, bool durability) {
+Queue::Queue(std::string bindingKey, bool persistence, bool durability)
+    : _persistence(persistence), _durability(durability) {
   // TODO: messages durability
 }
 
 void Queue::publish(std::vector<uint8_t> message) {
-  logger::log.info("Recieved message: " +
-                   std::string(message.begin(), message.end()));
   _mutex.lock();
   _queue.push(std::move(message));
   _mutex.unlock();
