@@ -40,12 +40,13 @@ Connection::Connection(std::string host, int port)
   int optlen = sizeof(optval);
   if (setsockopt(_socket, SOL_SOCKET, SO_KEEPALIVE, &optval, optlen) < 0) {
     close(_socket);
-    throw PostmanConnectionException("Keepalive failed");
+    throw PostmanConnectionException("Setting keepalive failed");
   }
 
   sockaddr_in addr = {AF_INET, htons(_port), in_addr{inet_addr(_host.c_str())}};
   socklen_t addrSize = sizeof addr;
   if (::connect(_socket, (sockaddr *)&addr, addrSize) < 0) {
+    close(_socket);
     throw PostmanConnectionException("Cannot connect to the socket");
   }
 }
@@ -91,17 +92,17 @@ std::vector<uint8_t> Connection::collect() {
 
   uint8_t tag = static_cast<uint8_t>(MessageTag::collect);
   if (write(_socket, &tag, 1) < 0) {
-    throw PostmanConnectionException("Cannot collection message tag.");
+    throw PostmanConnectionException("Cannot collect message tag.");
   }
 
   uint64_t size;
   if (read(_socket, &size, 8) < 0) {
-    throw PostmanConnectionException("Cannot collection message tag.");
+    throw PostmanConnectionException("Cannot collect message size.");
   }
 
   std::vector<uint8_t> message;
   if (readFromSocket(_socket, message, size) < 0) {
-    throw PostmanConnectionException("Cannot collection message tag.");
+    throw PostmanConnectionException("Cannot collect message.");
   }
 
   return std::move(message);
@@ -159,40 +160,33 @@ void Connection::queueDeclare(std::string name, std::string bindingKey,
   name.resize(queueNameSize);
   bindingKey.resize(keySize);
 
-  try {
-    if (write(_socket, &tag, 1) < 0) {
-      throw PostmanConnectionException("Cannot send declaration tag.");
-    }
+  if (write(_socket, &tag, 1) < 0) {
+    throw PostmanConnectionException("Cannot send declaration tag.");
+  }
 
-    if (write(_socket, &per, 1) < 0) {
-      throw PostmanConnectionException("Cannot send declaration persistence.");
-    }
+  if (write(_socket, &per, 1) < 0) {
+    throw PostmanConnectionException("Cannot send declaration persistence.");
+  }
 
-    if (write(_socket, &dur, 1) < 0) {
-      throw PostmanConnectionException("Cannot send declaration durability.");
-    }
+  if (write(_socket, &dur, 1) < 0) {
+    throw PostmanConnectionException("Cannot send declaration durability.");
+  }
 
-    if (write(_socket, &name[0], queueNameSize) < 0) {
-      throw PostmanConnectionException("Cannot send declaration name.");
-    }
+  if (write(_socket, &name[0], queueNameSize) < 0) {
+    throw PostmanConnectionException("Cannot send declaration name.");
+  }
 
-    if (write(_socket, &bindingKey[0], keySize) < 0) {
-      throw PostmanConnectionException("Cannot publish message.");
-    }
+  if (write(_socket, &bindingKey[0], keySize) < 0) {
+    throw PostmanConnectionException("Cannot publish message.");
+  }
 
-    uint8_t tag;
-    int result = read(_socket, &tag, 1);
+  int result = read(_socket, &tag, 1);
 
-    if (result < 0) {
-      throw PostmanConnectionException("Error recieving declare respnonse.");
-    }
+  if (result < 0) {
+    throw PostmanConnectionException("Error recieving declare respnonse.");
+  }
 
-    if (MessageTag(tag) != MessageTag::ack) {
-      throw PostmanConnectionException("Error recieving declare.");
-    }
-
-  } catch (PostmanConnectionException e) {
-    close(_socket);
-    throw PostmanConnectionException(e.what());
+  if (MessageTag(tag) != MessageTag::ack) {
+    throw PostmanConnectionException("Error recieving declare.");
   }
 }

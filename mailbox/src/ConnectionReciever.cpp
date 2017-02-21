@@ -12,6 +12,23 @@
 const int queueNameSize = 255;
 const int keySize = 255;
 
+int readFromSocket(int sck, std::vector<uint8_t> &v, unsigned int n) {
+  v.resize(n);
+  int i, totalRead = 0, toRead = n;
+  while ((i = read(sck, &v[totalRead], toRead)) > 0) {
+    totalRead += i;
+    toRead -= i;
+    if (i <= 0 && totalRead != n) {
+      return -1;
+    }
+  }
+}
+
+void trim(std::string &a) {
+  auto position = a.find_first_of((char)0);
+  a.erase(a.begin() + position, a.end());
+}
+
 ConnectionReciever::ConnectionReciever(int socket, sockaddr_in addr)
     : _socket{socket},
       _host{std::string(inet_ntoa(addr.sin_addr))},
@@ -30,7 +47,6 @@ ConnectionReciever &ConnectionReciever::operator=(ConnectionReciever &&other) {
 }
 
 void ConnectionReciever::operator()() {
-  // big TODO: assert that proper number of bytes is read
   logger::log.info("New connection from: " + _host + " on " +
                    std::to_string(_port));
 
@@ -45,21 +61,21 @@ void ConnectionReciever::operator()() {
     if (recieved < 0) {
       logger::log.error("Error while reading tag from socket!", errno);
       return;
-    } else if (recieved > 0) {
-      switch (MessageTag(tag)) {
-        case MessageTag::message:
-          handleMessageDelivery();
-          break;
-        case MessageTag::collect:
-          handleMessageCollection();
-          break;
-        case MessageTag::queueBind:
-          handleQueueBinding();
-          break;
-        case MessageTag::queueDeclare:
-          handleQueueDeclaration();
-          break;
-      }
+    }
+
+    switch (MessageTag(tag)) {
+      case MessageTag::message:
+        handleMessageDelivery();
+        break;
+      case MessageTag::collect:
+        handleMessageCollection();
+        break;
+      case MessageTag::queueBind:
+        handleQueueBinding();
+        break;
+      case MessageTag::queueDeclare:
+        handleQueueDeclaration();
+        break;
     }
   }
 
@@ -68,26 +84,25 @@ void ConnectionReciever::operator()() {
 
 void ConnectionReciever::handleMessageDelivery() {
   uint64_t size;
-  std::string routingKey;
-  routingKey.resize(keySize);
-
   if (read(_socket, &size, 8) < 0) {
     logger::log.error("Error while reading size from socket!", errno);
     return;
   }
 
-  if (read(_socket, &routingKey[0], keySize) < 0) {
+  std::vector<uint8_t> routingKeyBytes;
+  if (readFromSocket(_socket, routingKeyBytes, keySize) < 0) {
     logger::log.error("Error while reading key from socket!", errno);
     return;
   }
 
-  routingKey.shrink_to_fit();
   std::vector<uint8_t> buffer;
-  buffer.resize(size);
-  if (read(_socket, &buffer[0], size) < 0) {
+  if (readFromSocket(_socket, buffer, size) < 0) {
     logger::log.error("Error while reading from socket!", errno);
     return;
   }
+
+  std::string routingKey(routingKeyBytes.begin(), routingKeyBytes.end());
+  trim(routingKey);
 
   manager.publish(routingKey, std::move(buffer));
 }
@@ -114,18 +129,17 @@ void ConnectionReciever::handleMessageCollection() {
 }
 
 void ConnectionReciever::handleQueueBinding() {
-  std::string name;
-  name.resize(queueNameSize);
-
-  if (read(_socket, &name[0], queueNameSize) < 0) {
+  std::vector<uint8_t> queueNameBytes;
+  if (readFromSocket(_socket, queueNameBytes, queueNameSize) < 0) {
     logger::log.error("Error while reading queue name from socket!", errno);
     return;
   }
 
-  name.shrink_to_fit();
+  std::string queueName(queueNameBytes.begin(), queueNameBytes.end());
+  trim(queueName);
 
   uint8_t tag;
-  if ((_queue = manager.queueBinding(name))) {
+  if ((_queue = manager.queueBinding(queueName))) {
     tag = static_cast<uint8_t>(MessageTag::ack);
   } else {
     tag = static_cast<uint8_t>(MessageTag::rej);
@@ -138,39 +152,36 @@ void ConnectionReciever::handleQueueBinding() {
 }
 
 void ConnectionReciever::handleQueueDeclaration() {
-  std::string name;
-  name.resize(queueNameSize);
-  std::string bindingKey;
-  bindingKey.resize(keySize);
   bool persistence;
-  bool durability;
-
   if (read(_socket, &persistence, 1) < 0) {
-    logger::log.error("Error while reading persistence flag from socket!",
-                      errno);
+    logger::log.error("Error while reading persistence from socket!", errno);
     return;
   }
 
+  bool durability;
   if (read(_socket, &durability, 1) < 0) {
-    logger::log.error("Error while reading durability flag from socket!",
-                      errno);
+    logger::log.error("Error while reading durability from socket!", errno);
     return;
   }
 
-  if (read(_socket, &name[0], queueNameSize) < 0) {
+  std::vector<uint8_t> queueNameBytes;
+  if (readFromSocket(_socket, queueNameBytes, queueNameSize) < 0) {
     logger::log.error("Error while reading queue name from socket!", errno);
     return;
   }
 
-  if (read(_socket, &bindingKey[0], keySize) < 0) {
+  std::vector<uint8_t> bindingKeyBytes;
+  if (readFromSocket(_socket, bindingKeyBytes, keySize) < 0) {
     logger::log.error("Error while reading size from socket!", errno);
     return;
   }
 
-  name.shrink_to_fit();
-  bindingKey.shrink_to_fit();
+  std::string queueName(queueNameBytes.begin(), queueNameBytes.end());
+  std::string bindingKey(bindingKeyBytes.begin(), bindingKeyBytes.end());
+  trim(queueName);
+  trim(bindingKey);
   uint8_t tag = static_cast<uint8_t>(MessageTag::ack);
-  manager.queueInit(name, bindingKey, persistence, durability < 0);
+  manager.queueInit(queueName, bindingKey, persistence, durability < 0);
 
   if (write(_socket, &tag, 1) < 0) {
     logger::log.error("Failed to acknowledge queue declaration!", errno);
