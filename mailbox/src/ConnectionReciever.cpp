@@ -12,13 +12,12 @@
 const int queueNameSize = 255;
 const int keySize = 255;
 
-int readFromSocket(int sck, std::vector<uint8_t> &v, unsigned int n) {
-  v.resize(n);
-  int i, totalRead = 0, toRead = n;
-  while ((i = read(sck, &v[totalRead], toRead)) > 0) {
-    totalRead += i;
-    toRead -= i;
-    if (i <= 0 && totalRead != n) {
+int readFromSocket(int sck, std::vector<uint8_t> &v, unsigned int size) {
+  v.resize(size);
+  int n, toRead = size;
+  while ((n = read(sck, &v[size - toRead], toRead)) > 0) {
+    toRead -= n;
+    if (n <= 0 && toRead != 0) {
       return -1;
     }
   }
