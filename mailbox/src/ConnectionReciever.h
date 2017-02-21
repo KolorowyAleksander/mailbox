@@ -1,6 +1,7 @@
 #ifndef CONNECTION_RECIEVER_H
 #define CONNECTION_RECIEVER_H
 
+#include <QueueManager.h>
 #include <Queue.h>
 
 #include <netinet/in.h>
@@ -10,7 +11,7 @@
 
 class ConnectionReciever {
  public:
-  ConnectionReciever(int socket, sockaddr_in addr);
+  ConnectionReciever(std::shared_ptr<QueueManager> manager, int socket, sockaddr_in addr);
   ConnectionReciever(ConnectionReciever &&other);
   ConnectionReciever &operator=(ConnectionReciever &&other);
   void operator()();
@@ -20,6 +21,7 @@ class ConnectionReciever {
   std::string _host;
   int _port;
   std::shared_ptr<Queue> _queue;
+  std::shared_ptr<QueueManager> _manager;
 
   void handleMessageDelivery();
   void handleMessageCollection();

@@ -29,17 +29,20 @@ void trim(std::string &a) {
   a.erase(a.begin() + position, a.end());
 }
 
-ConnectionReciever::ConnectionReciever(int socket, sockaddr_in addr)
-    : _socket{socket},
+ConnectionReciever::ConnectionReciever(std::shared_ptr<QueueManager> manager, int socket, sockaddr_in addr)
+    : _manager{manager},
+      _socket{socket},
       _host{std::string(inet_ntoa(addr.sin_addr))},
       _port{addr.sin_port} {}
 
 ConnectionReciever::ConnectionReciever(ConnectionReciever &&other)
-    : _socket{other._socket},
+    : _manager{other._manager},
+      _socket{other._socket},
       _host{std::move(other._host)},
       _port{other._port} {}
 
 ConnectionReciever &ConnectionReciever::operator=(ConnectionReciever &&other) {
+  _manager = other._manager;
   _socket = other._socket;
   _host = std::move(other._host);
   _port = other._port;
@@ -104,7 +107,7 @@ void ConnectionReciever::handleMessageDelivery() {
   std::string routingKey(routingKeyBytes.begin(), routingKeyBytes.end());
   trim(routingKey);
 
-  manager.publish(routingKey, std::move(buffer));
+  _manager->publish(routingKey, std::move(buffer));
 }
 
 void ConnectionReciever::handleMessageCollection() {
@@ -138,7 +141,7 @@ void ConnectionReciever::handleQueueBinding() {
   trim(queueName);
 
   uint8_t tag;
-  if ((_queue = manager.queueBinding(queueName))) {
+  if ((_queue = _manager->queueBinding(queueName))) {
     tag = static_cast<uint8_t>(MessageTag::ack);
   } else {
     tag = static_cast<uint8_t>(MessageTag::rej);
@@ -181,7 +184,7 @@ void ConnectionReciever::handleQueueDeclaration() {
   trim(bindingKey);
 
   uint8_t tag = static_cast<uint8_t>(MessageTag::ack);
-  manager.queueInit(queueName, bindingKey, persistence, durability < 0);
+  _manager->queueInit(queueName, bindingKey, persistence, durability < 0);
 
   if (write(_socket, &tag, 1) < 0) {
     logger::log.error("Failed to acknowledge queue declaration!", errno);
