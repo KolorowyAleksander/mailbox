@@ -59,10 +59,6 @@ void ConnectionReciever::operator()() {
         case MessageTag::queueDeclare:
           handleQueueDeclaration();
           break;
-        default: {
-          logger::log.error("Unhandled tag was read from socket!", errno);
-          return;
-        }
       }
     }
   }
