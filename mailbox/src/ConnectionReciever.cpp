@@ -9,7 +9,6 @@
 #include <cerrno>
 #include <vector>
 
-#include <iostream>
 
 const int queueNameSize = 255;
 const int keySize = 255;
@@ -40,7 +39,7 @@ void ConnectionReciever::operator()() {
     uint8_t tag;
     int recieved = read(_socket, &tag, 1);
 
-    if (recieved < 0) {
+    if (recieved <= 0) {
       logger::log.error("Error while reading tag socket!", errno);
       return;
     } else if (recieved > 0) {

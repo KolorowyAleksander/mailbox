@@ -62,7 +62,6 @@ namespace date {
 
 // MSVC's constexpr support is still a WIP, even in VS2015.
 // Fall back to a lesser mode to support it.
-// TODO: Remove this or retest later once MSVC's constexpr improves.
 #if defined(_MSC_VER) && _MSC_VER <= 1900 && !defined(__clang__)
 // MS cl compiler pre VS2017
 #define CONSTDATA const

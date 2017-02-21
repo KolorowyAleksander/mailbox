@@ -9,7 +9,6 @@
 
 #include <cerrno>
 #include <cstring>
-#include <iostream>
 #include <regex>
 #include <string>
 #include <vector>
@@ -18,6 +17,19 @@ const int queueNameSize = 255;
 const int keySize = 255;
 const std::regex routingKeyPattern("\\w+(\\.\\w+)*");
 const std::regex bindingKeyPattern("(\\w+|\\*|\\#)(\\.(\\w+|\\*|\\#))*");
+
+
+int readFromSocket(int sck, std::vector<uint8_t> &v, unsigned int n) {
+  v.resize(n);
+  int i, totalRead = 0, toRead = n;
+  while ((i = read(sck, &v[totalRead], toRead)) > 0) {
+    totalRead += i;
+    toRead -= i;
+    if (i <= 0 && totalRead != n) {
+      return -1;
+    }
+  }
+}
 
 Connection::Connection(std::string host, int port)
     : _port{port}, _host{host}, _isBound(false) {
@@ -82,8 +94,7 @@ std::vector<uint8_t> Connection::collect() {
   }
 
   std::vector<uint8_t> message;
-  message.resize(size);
-  if (read(_socket, &message[0], size) < 0) {
+  if (readFromSocket(_socket, message, size) < 0) {
     throw PostmanConnectionException("Cannot collection message tag.");
   }
 
