@@ -7,9 +7,8 @@
 #include <iostream>
 #include <sstream>
 
-QueueManager manager;
 
-QueueManager::QueueManager() {
+QueueManager::QueueManager(std::string queuesFileName) : _file(queuesFileName) {
   std::ifstream readStream;
   readStream.open(_file);
   if (!readStream.is_open()) {
