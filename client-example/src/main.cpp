@@ -92,7 +92,7 @@ int main(int argc, char* argv[]) {
     std::string workerName{"James"};
     try {
       Connection connection(broker, port);
-      for (auto i = 0; i < 10000 ; i++) {
+      for (auto i = 0; i < 10000; i++) {
         std::string message = workerName + "--" + random_string(107);
         std::vector<uint8_t> v(message.begin(), message.end());
         connection.publish(v, "i.am.bond");
@@ -108,7 +108,7 @@ int main(int argc, char* argv[]) {
     std::string workerName{"Bond"};
     try {
       Connection connection(broker, port);
-      for (auto i = 0; i < 10000 ; i++) {
+      for (auto i = 0; i < 10000; i++) {
         std::string message = workerName + "--" + random_string(100);
         std::vector<uint8_t> v(message.begin(), message.end());
         connection.publish(v, "i.am.james.bond");
@@ -132,7 +132,7 @@ int main(int argc, char* argv[]) {
     }
   });
 
-  std::thread miraclePostalWorker([broker](){
+  std::thread miraclePostalWorker([broker]() {
     std::string workerName{"Pat"};
     try {
       Connection connection(broker, port);

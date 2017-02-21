@@ -20,6 +20,10 @@ class QueueManager {
   std::unordered_map<std::string, std::shared_ptr<Queue> > _queues;
   std::vector<std::pair<std::string, std::string> > _queueBindings;
   std::mutex _mutex;
+  const std::string _file = "queues";
+
+  void insertQueue(std::string name, std::string bindingKey, bool persistence,
+                   bool durability);
 };
 
 extern QueueManager manager;

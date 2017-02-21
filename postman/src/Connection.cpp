@@ -16,6 +16,7 @@
 const int queueNameSize = 255;
 const int keySize = 255;
 const std::regex routingKeyPattern("\\w+(\\.\\w+)*");
+const std::regex namePattern("(\\w|\\d)+");
 const std::regex bindingKeyPattern("(\\w+|\\*|\\#)(\\.(\\w+|\\*|\\#))*");
 
 int readFromSocket(int sck, std::vector<uint8_t> &v, unsigned int n) {
@@ -85,7 +86,6 @@ void Connection::publish(std::vector<uint8_t> data, std::string routingKey) {
 }
 
 std::vector<uint8_t> Connection::collect() {
-  // TODO: handle ack (?)
   if (!this->_isBound) {
     throw PostmanConnectionException("Queue is not bound!");
   }

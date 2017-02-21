@@ -108,7 +108,6 @@ void ConnectionReciever::handleMessageDelivery() {
 }
 
 void ConnectionReciever::handleMessageCollection() {
-  // TODO: wait for acknowledgement maybe (?)
   if (!_queue) {
     logger::log.error("Recieved read while queue not bound!", errno);
     return;

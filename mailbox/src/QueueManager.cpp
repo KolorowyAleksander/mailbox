@@ -3,13 +3,28 @@
 #include <utilities.h>
 
 #include <algorithm>
+#include <fstream>
 #include <iostream>
 #include <sstream>
 
 QueueManager manager;
 
 QueueManager::QueueManager() {
-  // TODO: read persistent queues to read here
+  std::ifstream readStream;
+  readStream.open(_file);
+  if (!readStream.is_open()) {
+    logger::log.error("Queues file doesn't exist yet!");
+  } else {
+    std::string line;
+    while (getline(readStream, line)) {
+      std::vector<std::string> queueParameters = utilities::split(line, '|');
+      std::string name = queueParameters[0];
+      std::string bindingKey = queueParameters[1];
+      bool persistence = (queueParameters[2] == "1");
+      bool durability = (queueParameters[3] == "1");
+      this->insertQueue(name, bindingKey, persistence, durability);
+    }
+  }
 }
 
 void QueueManager::publish(std::string routingKey,
@@ -39,12 +54,25 @@ int QueueManager::queueInit(std::string name, std::string bindingKey,
     return -1;
   }
 
-  logger::log.info("New queue declared: " + name + ", " + bindingKey);
+  if (result == _queueBindings.end() && persistence) {
+    std::ofstream writeStream;
+    writeStream.open(_file, std::ios::app);
+    writeStream << name << "|" << bindingKey << "|" << persistence << "|"
+                << durability << std::endl;
+    writeStream.close();
+  }
 
+  logger::log.info("New queue declared: " + name + ", " + bindingKey);
+  this->insertQueue(name, bindingKey, persistence, durability);
+
+  return 0;
+}
+
+void QueueManager::insertQueue(std::string name, std::string bindingKey,
+                               bool persistence, bool durability) {
   _mutex.lock();
   _queues[name] =
       std::shared_ptr<Queue>(new Queue(bindingKey, persistence, durability));
   _queueBindings.push_back({name, bindingKey});
   _mutex.unlock();
-  return 0;
 }
