@@ -14,7 +14,7 @@ int main(int argc, char* argv[]) {
     connection.queueDeclare("name", "lele.trele.morele", true, true);
     for (int i = 0; i < 10; i++) {
       connection.publish(data, "lele.trele.morele");
-      usleep(1000);
+      sleep(1);
     }
 
 
@@ -24,6 +24,8 @@ int main(int argc, char* argv[]) {
       std::string b(res.begin(), res.end());
       std::cout << b << std::endl;
     }
+
+    sleep(100);
 
   } catch (PostmanException e) {
     std::cout << e.what() << std::endl;

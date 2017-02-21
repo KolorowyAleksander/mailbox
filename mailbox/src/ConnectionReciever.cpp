@@ -38,9 +38,13 @@ void ConnectionReciever::operator()() {
   while (true) {
     uint8_t tag;
     int recieved = read(_socket, &tag, 1);
-
-    if (recieved <= 0) {
-      logger::log.error("Error while reading tag socket!", errno);
+    if (recieved == 0) {
+      logger.log.info("Connection with" + _host + "ended.");
+      return;
+    }
+    
+    if (recieved < 0) {
+      logger::log.error("Error while reading tag from socket!", errno);
       return;
     } else if (recieved > 0) {
       switch (MessageTag(tag)) {

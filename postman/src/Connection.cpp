@@ -37,6 +37,13 @@ Connection::Connection(std::string host, int port)
     throw PostmanConnectionException("Cannot create socket.");
   }
 
+  int optval = 1;
+  int optlen = sizeof(optval);
+  if(setsockopt(_socket, SOL_SOCKET, SO_KEEPALIVE, &optval, optlen) < 0) {
+    close(_socket);
+    throw PostmanConnectionException("Keepalive failed");
+  }
+
   sockaddr_in addr = {AF_INET, htons(_port), in_addr{inet_addr(_host.c_str())}};
   socklen_t addrSize = sizeof addr;
   if (::connect(_socket, (sockaddr *)&addr, addrSize) < 0) {
