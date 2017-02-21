@@ -2,7 +2,6 @@
 #include <postman/PostmanException.h>
 #include <unistd.h>
 #include <iostream>
-#include "longMessage.h"
 
 int main(int argc, char* argv[]) {
   try {
@@ -26,14 +25,6 @@ int main(int argc, char* argv[]) {
       std::cout << b << std::endl;
     }
 
-    // std::vector<uint8_t> longMessage(longString.begin(), longString.end());
-    // connection.publish(longMessage, "lele.trele.morele");
-
-    // std::vector<uint8_t> se = connection.collect();
-    // std::string sr(se.begin(), se.end());
-
-    // std::cout << sr <<std::endl;
-    // std::cout << (sr == longString) << std::endl;
   } catch (PostmanException e) {
     std::cout << e.what() << std::endl;
   }
