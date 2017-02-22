@@ -162,8 +162,8 @@ void ConnectionReciever::handleQueueDeclaration() {
     return;
   }
 
-  bool durability;
-  if (read(_socket, &durability, 1) < 0) {
+  std::vector<uint8_t> durabilityBytes;
+  if (readFromSocket(_socket, durabilityBytes, 8) < 0) {
     logger::log.error("Error while reading durability from socket!", errno);
     return;
   }
@@ -186,7 +186,8 @@ void ConnectionReciever::handleQueueDeclaration() {
   trim(bindingKey);
 
   uint8_t tag = static_cast<uint8_t>(MessageTag::ack);
-  _manager->queueInit(queueName, bindingKey, persistence, durability);
+  uint64_t durability = *reinterpret_cast<uint64_t*>(queueNameBytes.data());
+  _manager->queueInit(queueName, bindingKey, persistence, (bool)durability);
 
   if (write(_socket, &tag, 1) < 0) {
     logger::log.error("Failed to acknowledge queue declaration!", errno);

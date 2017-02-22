@@ -138,7 +138,8 @@ void Connection::queueBind(std::string name) {
 }
 
 void Connection::queueDeclare(std::string name, std::string bindingKey,
-                              bool persistence, bool durability) {
+                              bool persistence, unsigned int durability) {
+
   if (!std::regex_match(name, namePattern)) {
     throw PostmanConnectionException("Name contains strange characters!");
   }
@@ -159,7 +160,7 @@ void Connection::queueDeclare(std::string name, std::string bindingKey,
 
   uint8_t tag = static_cast<uint8_t>(MessageTag::queueDeclare);
   uint8_t per = persistence;
-  uint8_t dur = durability;
+  uint64_t dur = durability;
 
   name.resize(queueNameSize);
   bindingKey.resize(keySize);
@@ -172,7 +173,7 @@ void Connection::queueDeclare(std::string name, std::string bindingKey,
     throw PostmanConnectionException("Cannot send declaration persistence.");
   }
 
-  if (write(_socket, &dur, 1) < 0) {
+  if (write(_socket, &dur, 8) < 0) {
     throw PostmanConnectionException("Cannot send declaration durability.");
   }
 

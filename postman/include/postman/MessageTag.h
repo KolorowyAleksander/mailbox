@@ -5,7 +5,7 @@
  * Queue declaration message is:
  * 1B tag,
  * 1B persistence flag,
- * 1B durability flag,
+ * 8B durability value (message time to live in miliseconds, 0 if infinite),
  * 255 B name,
  * 255 B bindingKey
  *

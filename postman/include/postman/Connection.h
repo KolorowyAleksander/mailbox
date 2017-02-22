@@ -53,7 +53,7 @@ class Connection {
    * but at a cost of speed and space
    */
   void queueDeclare(std::string name, std::string bindingKey, bool persistence,
-                    bool durability);
+                    unsigned int durability);
 };
 
 #endif  // CONNECTION_H
