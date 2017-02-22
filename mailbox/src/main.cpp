@@ -43,7 +43,7 @@ int main(int argc, char* argv[]) {
   sockaddr_in inAddr;
   socklen_t inAddrSize = sizeof inAddr;
   while ((newSocket = accept(socket, (sockaddr*)&inAddr, &inAddrSize)) != -1) {
-    std::thread((ConnectionReciever(manager, newSocket, inAddr))).detach();
+    std::thread(ConnectionReciever(manager, newSocket, inAddr)).detach();
   }
 
   return 0;
