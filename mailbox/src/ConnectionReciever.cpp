@@ -87,8 +87,8 @@ void ConnectionReciever::operator()() {
 }
 
 void ConnectionReciever::handleMessageDelivery() {
-  uint64_t size;
-  if (read(_socket, &size, 8) < 0) {
+  std::vector<uint8_t> sizeBytes;
+  if (readFromSocket(_socket, sizeBytes, 8) < 0) {
     logger::log.error("Error while reading size from socket!", errno);
     return;
   }
@@ -99,6 +99,7 @@ void ConnectionReciever::handleMessageDelivery() {
     return;
   }
 
+  uint64_t size = *reinterpret_cast<uint64_t*>(sizeBytes.data());
   std::vector<uint8_t> buffer;
   if (readFromSocket(_socket, buffer, size) < 0) {
     logger::log.error("Error while reading from socket!", errno);
