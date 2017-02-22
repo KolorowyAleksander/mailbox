@@ -138,8 +138,7 @@ void Connection::queueBind(std::string name) {
 
 void Connection::queueDeclare(std::string name, std::string bindingKey,
                               bool persistence, bool durability) {
-
-  if(!std::regex_match(name, namePattern)) {
+  if (!std::regex_match(name, namePattern)) {
     throw PostmanConnectionException("Name contains strange characters!");
   }
   if (!std::regex_match(bindingKey, bindingKeyPattern)) {

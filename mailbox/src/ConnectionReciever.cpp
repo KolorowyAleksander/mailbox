@@ -29,7 +29,8 @@ void trim(std::string &a) {
   a.erase(a.begin() + position, a.end());
 }
 
-ConnectionReciever::ConnectionReciever(std::shared_ptr<QueueManager> manager, int socket, sockaddr_in addr)
+ConnectionReciever::ConnectionReciever(std::shared_ptr<QueueManager> manager,
+                                       int socket, sockaddr_in addr)
     : _manager{manager},
       _socket{socket},
       _host{std::string(inet_ntoa(addr.sin_addr))},

@@ -1,16 +1,14 @@
 #include <ConnectionReciever.h>
-#include <SimpleLogger.h>
 #include <QueueManager.h>
+#include <SimpleLogger.h>
 
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <cerrno>
-#include <thread>
 #include <memory>
+#include <thread>
 
-
-const std::string fileName {"queues"};
-
+const std::string fileName{"queues"};
 
 int errorHappened(std::string message) {
   logger::log.error(message, errno);
@@ -40,7 +38,7 @@ int main(int argc, char* argv[]) {
     return errorHappened("We cannot hear you!");
   }
 
-  std::shared_ptr<QueueManager> manager (new QueueManager(fileName));
+  std::shared_ptr<QueueManager> manager(new QueueManager(fileName));
   int newSocket;
   sockaddr_in inAddr;
   socklen_t inAddrSize = sizeof inAddr;
