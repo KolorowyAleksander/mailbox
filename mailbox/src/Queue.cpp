@@ -2,9 +2,7 @@
 #include <SimpleLogger.h>
 
 Queue::Queue(std::string bindingKey, bool persistence, bool durability)
-    : _persistence(persistence), _durability(durability) {
-  // TODO: messages durability
-}
+    : _persistence(persistence), _durability(durability) {}
 
 void Queue::publish(std::vector<uint8_t> message) {
   _mutex.lock();

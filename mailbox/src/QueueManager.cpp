@@ -40,7 +40,7 @@ std::shared_ptr<Queue> QueueManager::queueBinding(std::string name) {
 }
 
 int QueueManager::queueInit(std::string name, std::string bindingKey,
-                            bool persistence, bool durability) {
+                            bool persistence, uint64_t durability) {
   auto result =
       std::find_if(_queueBindings.begin(), _queueBindings.end(),
                    [name](const std::pair<std::string, std::string>& element) {
@@ -67,7 +67,7 @@ int QueueManager::queueInit(std::string name, std::string bindingKey,
 }
 
 void QueueManager::insertQueue(std::string name, std::string bindingKey,
-                               bool persistence, bool durability) {
+                               bool persistence, uint64_t durability) {
   _mutex.lock();
   _queues[name] =
       std::shared_ptr<Queue>(new Queue(bindingKey, persistence, durability));

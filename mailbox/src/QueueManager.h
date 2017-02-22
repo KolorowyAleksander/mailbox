@@ -14,7 +14,7 @@ class QueueManager {
   void publish(std::string routingKey, std::vector<uint8_t> message);
   std::shared_ptr<Queue> queueBinding(std::string name);
   int queueInit(std::string name, std::string bindingKey, bool persistence,
-                bool durability);
+                uint64_t durability);
 
  private:
   std::unordered_map<std::string, std::shared_ptr<Queue> > _queues;
@@ -23,7 +23,7 @@ class QueueManager {
   const std::string _file;
 
   void insertQueue(std::string name, std::string bindingKey, bool persistence,
-                   bool durability);
+                   uint64_t durability);
 };
 
 #endif  // QUEUE_MANAGER_H

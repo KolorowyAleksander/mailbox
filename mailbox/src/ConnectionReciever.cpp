@@ -187,7 +187,7 @@ void ConnectionReciever::handleQueueDeclaration() {
 
   uint8_t tag = static_cast<uint8_t>(MessageTag::ack);
   uint64_t durability = *reinterpret_cast<uint64_t*>(queueNameBytes.data());
-  _manager->queueInit(queueName, bindingKey, persistence, (bool)durability);
+  _manager->queueInit(queueName, bindingKey, persistence, durability);
 
   if (write(_socket, &tag, 1) < 0) {
     logger::log.error("Failed to acknowledge queue declaration!", errno);
