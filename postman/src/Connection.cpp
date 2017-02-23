@@ -76,11 +76,11 @@ void Connection::publish(std::vector<uint8_t> data, std::string routingKey) {
     throw PostmanConnectionException("Cannot publish message size.");
   }
 
-  if (write(_socket, &routingKey[0], 255) < 0) {
+  if (write(_socket, routingKey.data(), 255) < 0) {
     throw PostmanConnectionException("Cannot publish message routing key.");
   }
 
-  if (write(_socket, &data[0], data.size()) < 0) {
+  if (write(_socket, data.data(), data.size()) < 0) {
     throw PostmanConnectionException("Cannot publish message.");
   }
 }
@@ -122,7 +122,7 @@ void Connection::queueBind(std::string name) {
     throw PostmanConnectionException("Cannot send binding tag.");
   }
 
-  if (write(_socket, &name[0], queueNameSize) < 0) {
+  if (write(_socket, name.data(), queueNameSize) < 0) {
     throw PostmanConnectionException("Cannot send bind name.");
   }
 
@@ -176,11 +176,11 @@ void Connection::queueDeclare(std::string name, std::string bindingKey,
     throw PostmanConnectionException("Cannot send declaration durability.");
   }
 
-  if (write(_socket, &name[0], queueNameSize) < 0) {
+  if (write(_socket, name.data(), queueNameSize) < 0) {
     throw PostmanConnectionException("Cannot send declaration name.");
   }
 
-  if (write(_socket, &bindingKey[0], keySize) < 0) {
+  if (write(_socket, bindingKey.data(), keySize) < 0) {
     throw PostmanConnectionException("Cannot publish message.");
   }
 

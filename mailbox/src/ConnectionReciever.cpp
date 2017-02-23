@@ -127,7 +127,7 @@ void ConnectionReciever::handleMessageCollection() {
     return;
   }
 
-  if (write(_socket, &message[0], size) < 0) {
+  if (write(_socket, message.data(), size) < 0) {
     logger::log.error("Failed to send message!", errno);
     return;
   }
