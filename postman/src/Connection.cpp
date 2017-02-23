@@ -1,4 +1,3 @@
-// TODO: assert no empty messages are sent
 #include <postman/Connection.h>
 #include <postman/MessageTag.h>
 #include <postman/PostmanConnectionException.h>
@@ -57,6 +56,10 @@ Connection::~Connection() { close(_socket); }
 void Connection::publish(std::vector<uint8_t> data, std::string routingKey) {
   uint8_t tag = static_cast<uint8_t>(MessageTag::message);
   uint64_t messageSize = data.size();
+
+  if (data.size() == 0) {
+    throw PostmanConnectionException("Message must not be empty");
+  }
 
   if (!std::regex_match(routingKey, routingKeyPattern)) {
     throw PostmanConnectionException("Invalid routing key");
