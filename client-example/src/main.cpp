@@ -34,11 +34,11 @@ int main(int argc, char* argv[]) {
   std::string broker = std::string(argv[1]);
 
   Connection connection(broker, port);
-  connection.queueDeclare("owoce", "*.trele.morele", true, false);
-  connection.queueDeclare("warzywa", "pomidory.#", false, false);
-  connection.queueDeclare("007", "i.am.#", false, false);
+  connection.queueDeclare("owoce", "*.trele.morele", true, 10000);
+  connection.queueDeclare("warzywa", "pomidory.#", false, 10000);
+  connection.queueDeclare("007", "i.am.#", false, 10);
   connection.queueDeclare("poczta_polska", "no.message.will.ever.get.here.ever",
-                          false, false);
+                          false, 100);
 
   std::thread fruitDealer([broker]() {
     std::string workerName{"Kim Won Ki"};

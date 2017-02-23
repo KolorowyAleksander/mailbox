@@ -19,13 +19,12 @@ const std::regex routingKeyPattern("\\w+(\\.\\w+)*");
 const std::regex namePattern("(\\w|\\d)+");
 const std::regex bindingKeyPattern("(\\w+|\\*|\\#)(\\.(\\w+|\\*|\\#))*");
 
-int readFromSocket(int sck, std::vector<uint8_t> &v, unsigned int n) {
-  v.resize(n);
-  int i, totalRead = 0, toRead = n;
-  while ((i = read(sck, &v[totalRead], toRead)) > 0) {
-    totalRead += i;
-    toRead -= i;
-    if (i <= 0 && totalRead != n) {
+int readFromSocket(int sck, std::vector<uint8_t> &v, unsigned int size) {
+  v.resize(size);
+  int n, toRead = size;
+  while ((n = read(sck, &v[size - toRead], toRead)) > 0) {
+    toRead -= n;
+    if (n <= 0 && toRead != 0) {
       return -1;
     }
   }
@@ -138,7 +137,7 @@ void Connection::queueBind(std::string name) {
 }
 
 void Connection::queueDeclare(std::string name, std::string bindingKey,
-                              bool persistence, unsigned int durability) {
+                              bool persistence, uint64_t durability) {
 
   if (!std::regex_match(name, namePattern)) {
     throw PostmanConnectionException("Name contains strange characters!");

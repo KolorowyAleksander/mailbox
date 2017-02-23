@@ -60,7 +60,7 @@ int QueueManager::queueInit(std::string name, std::string bindingKey,
     writeStream.close();
   }
 
-  logger::log.info("New queue declared: " + name + ", " + bindingKey);
+  logger::log.info("New queue declared: " + name + ", " + bindingKey + ", " + std::to_string(persistence) + ", " + std::to_string(durability));
   this->insertQueue(name, bindingKey, persistence, durability);
 
   return 0;

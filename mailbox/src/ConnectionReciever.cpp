@@ -9,6 +9,7 @@
 
 #include <cerrno>
 #include <vector>
+#include <algorithm>
 
 const int queueNameSize = 255;
 const int keySize = 255;
@@ -186,7 +187,7 @@ void ConnectionReciever::handleQueueDeclaration() {
   trim(bindingKey);
 
   uint8_t tag = static_cast<uint8_t>(MessageTag::ack);
-  uint64_t durability = *reinterpret_cast<uint64_t*>(queueNameBytes.data());
+  uint64_t durability = *reinterpret_cast<uint64_t*>(durabilityBytes.data());
   _manager->queueInit(queueName, bindingKey, persistence, durability);
 
   if (write(_socket, &tag, 1) < 0) {
