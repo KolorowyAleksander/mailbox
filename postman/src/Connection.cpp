@@ -1,3 +1,4 @@
+// TODO: assert no empty messages are sent
 #include <postman/Connection.h>
 #include <postman/MessageTag.h>
 #include <postman/PostmanConnectionException.h>

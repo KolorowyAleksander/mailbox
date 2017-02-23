@@ -1,13 +1,17 @@
 #include <postman/Connection.h>
 #include <postman/PostmanException.h>
+
 #include <unistd.h>
+
 #include <iostream>
 #include <random>
 #include <string>
 #include <thread>
+#include <chrono>
 
 #include "long_message.h"
 const int port = 1410;
+
 
 // taken from http://stackoverflow.com/a/24586587 and modified a little
 std::string random_string(unsigned int length) {
@@ -34,11 +38,40 @@ int main(int argc, char* argv[]) {
   std::string broker = std::string(argv[1]);
 
   Connection connection(broker, port);
-  connection.queueDeclare("owoce", "*.trele.morele", true, 10000);
-  connection.queueDeclare("warzywa", "pomidory.#", false, 10000);
-  connection.queueDeclare("007", "i.am.#", false, 10);
+  connection.queueDeclare("timed_queue_test", "time", false, 100);
+  connection.queueDeclare("owoce", "*.trele.morele", true, 0);
+  connection.queueDeclare("warzywa", "pomidory.#", false, 0);
+  connection.queueDeclare("007", "i.am.#", false, 0);
   connection.queueDeclare("poczta_polska", "no.message.will.ever.get.here.ever",
-                          false, 100);
+                          false, 0);
+
+  try {
+    Connection secondConnection(broker, port);
+    for (int i = 0; i < 5; i++) {
+      std::string message = std::to_string(i) + "xxxxxxxxxxx";
+      std::vector<uint8_t> v(message.begin(), message.end());
+      secondConnection.publish(v, "time");
+    }
+  } catch (PostmanException e) {
+    std::cout << e.what() << std::endl;
+  }
+
+  std::this_thread::sleep_for(std::chrono::seconds(2));
+
+  std::thread timedReciever([broker]() {
+    try {
+      Connection connection(broker, port);
+      connection.queueBind("timed_queue_test");
+      while (true) {
+        std::vector<uint8_t> v = connection.collect();
+        if (v.size() != 0) {
+          std::cout << "recieved message from timed queue!" << std::endl;
+        }
+      }
+    } catch (PostmanException e) {
+      std::cout << e.what() << std::endl;
+    }
+  });
 
   std::thread fruitDealer([broker]() {
     std::string workerName{"Kim Won Ki"};
@@ -204,11 +237,11 @@ int main(int argc, char* argv[]) {
 
   m.join();
   theNewM.join();
+  miraclePostalWorker.join();
+  reposter.join();
   james.join();
   bond.join();
-  miraclePostalWorker.join();
   annoyingPoster.join();
-  reposter.join();
   monkey.join();
   fly.join();
   return 0;

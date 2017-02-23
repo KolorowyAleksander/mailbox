@@ -1,4 +1,6 @@
 #include <QueueManager.h>
+#include <TimedQueue.h>
+#include <DurableQueue.h>
 #include <SimpleLogger.h>
 #include <utilities.h>
 
@@ -6,6 +8,7 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+
 
 QueueManager::QueueManager(std::string queuesFileName) : _file(queuesFileName) {
   std::ifstream readStream;
@@ -68,9 +71,15 @@ int QueueManager::queueInit(std::string name, std::string bindingKey,
 
 void QueueManager::insertQueue(std::string name, std::string bindingKey,
                                bool persistence, uint64_t durability) {
+  std::shared_ptr<Queue> newQ;
+  if (durability == 0) {
+    newQ = std::make_shared<DurableQueue>(bindingKey, persistence);
+  } else {
+    newQ = std::make_shared<TimedQueue>(bindingKey, persistence, durability);
+  }
+
   _mutex.lock();
-  _queues[name] =
-      std::shared_ptr<Queue>(new Queue(bindingKey, persistence, durability));
+  _queues[name] = newQ;
   _queueBindings.push_back({name, bindingKey});
   _mutex.unlock();
 }

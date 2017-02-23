@@ -7,8 +7,9 @@ set(MAILBOX_SOURCES ${PROJECT_SOURCE_DIR}/main.cpp
                     ${PROJECT_SOURCE_DIR}/SimpleLogger.cpp
                     ${PROJECT_SOURCE_DIR}/ConnectionReciever.cpp
                     ${PROJECT_SOURCE_DIR}/QueueManager.cpp
-                    ${PROJECT_SOURCE_DIR}/Queue.cpp)
-
+                    ${PROJECT_SOURCE_DIR}/Queue.cpp
+                    ${PROJECT_SOURCE_DIR}/DurableQueue.cpp
+                    ${PROJECT_SOURCE_DIR}/TimedQueue.cpp)
 include_directories(${PROJECT_SOURCE_DIR})
 include_directories(${POSTMAN_INCLUDE_DIRS})
 include_directories("${PROJECT_BINARY_DIR}")
