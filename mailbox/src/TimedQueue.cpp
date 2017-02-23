@@ -15,13 +15,14 @@ void TimedQueue::publish(std::vector<uint8_t> message) {
 
 std::vector<uint8_t> TimedQueue::collect() {
   std::vector<uint8_t> r;
-  // TODO check for time properly
-  while (!_queue.empty() &&
-         (_queue.front().second + _durability <= stopwatch::now())) {
-    _mutex.lock();
-    r = _queue.front().first;
-    _queue.pop();
-    _mutex.unlock();
-    return r;
+  while (!_queue.empty()) {
+    if ((std::chrono::duration_cast<std::chrono::milliseconds>(stopwatch::now() - _queue.front().second) < _durability)) {
+      _mutex.lock();
+      r = _queue.front().first;
+      _queue.pop();
+      _mutex.unlock();
+      return r;
+    }
   }
+  return r;
 }
