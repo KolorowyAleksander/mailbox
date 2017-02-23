@@ -6,7 +6,6 @@
 #include <string>
 #include <vector>
 
-
 class Queue {
  public:
   Queue(std::string bindingKey, bool persistence);
@@ -19,4 +18,4 @@ class Queue {
   bool _persistence;
 };
 
-#endif // ABSTRACT_QUEUE_H
+#endif  // ABSTRACT_QUEUE_H

@@ -1,14 +1,13 @@
-#include <QueueManager.h>
-#include <TimedQueue.h>
 #include <DurableQueue.h>
+#include <QueueManager.h>
 #include <SimpleLogger.h>
+#include <TimedQueue.h>
 #include <utilities.h>
 
 #include <algorithm>
 #include <fstream>
 #include <iostream>
 #include <sstream>
-
 
 QueueManager::QueueManager(std::string queuesFileName) : _file(queuesFileName) {
   std::ifstream readStream;
@@ -63,7 +62,9 @@ int QueueManager::queueInit(std::string name, std::string bindingKey,
     writeStream.close();
   }
 
-  logger::log.info("New queue declared: " + name + ", " + bindingKey + ", " + std::to_string(persistence) + ", " + std::to_string(durability));
+  logger::log.info("New queue declared: " + name + ", " + bindingKey + ", " +
+                   std::to_string(persistence) + ", " +
+                   std::to_string(durability));
   this->insertQueue(name, bindingKey, persistence, durability);
 
   return 0;

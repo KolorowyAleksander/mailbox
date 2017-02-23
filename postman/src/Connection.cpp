@@ -100,7 +100,7 @@ std::vector<uint8_t> Connection::collect() {
     throw PostmanConnectionException("Cannot collect message size.");
   }
 
-  uint64_t size = *reinterpret_cast<uint64_t*> (sizeBytes.data());
+  uint64_t size = *reinterpret_cast<uint64_t *>(sizeBytes.data());
   std::vector<uint8_t> message;
   if (readFromSocket(_socket, message, size) < 0) {
     throw PostmanConnectionException("Cannot collect message.");
@@ -139,7 +139,6 @@ void Connection::queueBind(std::string name) {
 
 void Connection::queueDeclare(std::string name, std::string bindingKey,
                               bool persistence, uint64_t durability) {
-
   if (!std::regex_match(name, namePattern)) {
     throw PostmanConnectionException("Name contains strange characters!");
   }

@@ -4,7 +4,6 @@
 #include <Queue.h>
 #include <chrono>
 
-
 class TimedQueue : public Queue {
  public:
   TimedQueue(std::string bindingKey, bool persistence, uint64_t durability);
@@ -12,7 +11,9 @@ class TimedQueue : public Queue {
   std::vector<uint8_t> collect() override;
 
  private:
-  std::queue<std::pair<std::vector<uint8_t>, std::chrono::high_resolution_clock::time_point> > _queue;
+  std::queue<std::pair<std::vector<uint8_t>,
+                       std::chrono::high_resolution_clock::time_point> >
+      _queue;
   std::chrono::milliseconds _durability;
 };
 

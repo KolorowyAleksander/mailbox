@@ -1,7 +1,6 @@
 #include <DurableQueue.h>
 #include <SimpleLogger.h>
 
-
 DurableQueue::DurableQueue(std::string bindingKey, bool persistence)
     : Queue(bindingKey, persistence) {}
 

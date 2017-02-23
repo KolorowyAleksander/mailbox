@@ -3,15 +3,14 @@
 
 #include <unistd.h>
 
+#include <chrono>
 #include <iostream>
 #include <random>
 #include <string>
 #include <thread>
-#include <chrono>
 
 #include "long_message.h"
 const int port = 1410;
-
 
 // taken from http://stackoverflow.com/a/24586587 and modified a little
 std::string random_string(unsigned int length) {

@@ -3,7 +3,6 @@
 
 #include <Queue.h>
 
-
 class DurableQueue : public Queue {
  public:
   DurableQueue(std::string bindingKey, bool persistence);
@@ -14,5 +13,4 @@ class DurableQueue : public Queue {
   std::queue<std::vector<uint8_t> > _queue;
 };
 
-
-#endif // DURABLE_QUEUE_H
+#endif  // DURABLE_QUEUE_H

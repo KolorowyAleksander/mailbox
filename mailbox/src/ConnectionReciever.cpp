@@ -7,9 +7,9 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 
+#include <algorithm>
 #include <cerrno>
 #include <vector>
-#include <algorithm>
 
 const int queueNameSize = 255;
 const int keySize = 255;
@@ -100,7 +100,7 @@ void ConnectionReciever::handleMessageDelivery() {
     return;
   }
 
-  uint64_t size = *reinterpret_cast<uint64_t*>(sizeBytes.data());
+  uint64_t size = *reinterpret_cast<uint64_t *>(sizeBytes.data());
   std::vector<uint8_t> buffer;
   if (readFromSocket(_socket, buffer, size) < 0) {
     logger::log.error("Error while reading from socket!", errno);
@@ -187,7 +187,7 @@ void ConnectionReciever::handleQueueDeclaration() {
   trim(bindingKey);
 
   uint8_t tag = static_cast<uint8_t>(MessageTag::ack);
-  uint64_t durability = *reinterpret_cast<uint64_t*>(durabilityBytes.data());
+  uint64_t durability = *reinterpret_cast<uint64_t *>(durabilityBytes.data());
   _manager->queueInit(queueName, bindingKey, persistence, durability);
 
   if (write(_socket, &tag, 1) < 0) {
