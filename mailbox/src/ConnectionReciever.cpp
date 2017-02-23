@@ -10,6 +10,8 @@
 #include <algorithm>
 #include <cerrno>
 #include <vector>
+#include <thread>
+#include <chrono>
 
 const int queueNameSize = 255;
 const int keySize = 255;
@@ -119,7 +121,16 @@ void ConnectionReciever::handleMessageCollection() {
     return;
   }
 
-  std::vector<uint8_t> message = _queue->collect();
+  bool waiting = true;
+  std::vector<uint8_t> message;
+  while(waiting) {
+    message = _queue->collect();
+    if (message.size() != 0) {
+      waiting = false;
+    } else {
+      std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
+  }
   uint64_t size = message.size();
 
   if (write(_socket, &size, 8) < 0) {

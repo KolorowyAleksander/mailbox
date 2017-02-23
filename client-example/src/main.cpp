@@ -61,12 +61,8 @@ int main(int argc, char* argv[]) {
     try {
       Connection connection(broker, port);
       connection.queueBind("timed_queue_test");
-      while (true) {
-        std::vector<uint8_t> v = connection.collect();
-        if (v.size() != 0) {
-          std::cout << "recieved message from timed queue!" << std::endl;
-        }
-      }
+      std::vector<uint8_t> v = connection.collect();
+      std::cout << "recieved message from timed queue!" << std::endl;
     } catch (PostmanException e) {
       std::cout << e.what() << std::endl;
     }
