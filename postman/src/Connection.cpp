@@ -15,9 +15,9 @@
 
 const int queueNameSize = 255;
 const int keySize = 255;
-const std::regex routingKeyPattern("\\w+(\\.\\w+)*");
-const std::regex namePattern("(\\w|\\d)+");
-const std::regex bindingKeyPattern("(\\w+|\\*|\\#)(\\.(\\w+|\\*|\\#))*");
+//const std::regex routingKeyPattern("\\w+(\\.\\w+)*");
+//const std::regex namePattern("(\\w|\\d)+");
+//const std::regex bindingKeyPattern("(\\w+|\\*|\\#)(\\.(\\w+|\\*|\\#))*");
 
 int readFromSocket(int sck, std::vector<uint8_t> &v, unsigned int size) {
   v.resize(size);
@@ -61,9 +61,9 @@ void Connection::publish(std::vector<uint8_t> data, std::string routingKey) {
     throw PostmanConnectionException("Message must not be empty");
   }
 
-  if (!std::regex_match(routingKey, routingKeyPattern)) {
-    throw PostmanConnectionException("Invalid routing key");
-  }
+  //if (!std::regex_match(routingKey, routingKeyPattern)) {
+  //  throw PostmanConnectionException("Invalid routing key");
+  //}
 
   if (routingKey.size() > keySize) {
     throw PostmanConnectionException("Routing key must be less than " +
@@ -142,12 +142,12 @@ void Connection::queueBind(std::string name) {
 
 void Connection::queueDeclare(std::string name, std::string bindingKey,
                               bool persistence, uint64_t durability) {
-  if (!std::regex_match(name, namePattern)) {
-    throw PostmanConnectionException("Name contains strange characters!");
-  }
-  if (!std::regex_match(bindingKey, bindingKeyPattern)) {
-    throw PostmanConnectionException("Binding key is wrong!");
-  }
+  //if (!std::regex_match(name, namePattern)) {
+  //  throw PostmanConnectionException("Name contains strange characters!");
+  //}
+  //if (!std::regex_match(bindingKey, bindingKeyPattern)) {
+  //  throw PostmanConnectionException("Binding key is wrong!");
+  //}
 
   if (name.size() > queueNameSize) {
     throw PostmanConnectionException("Name must be less than " +
