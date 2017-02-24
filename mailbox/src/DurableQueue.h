@@ -3,6 +3,9 @@
 
 #include <Queue.h>
 
+#include <condition_variable>
+
+
 class DurableQueue : public Queue {
  public:
   DurableQueue(std::string bindingKey, bool persistence);
@@ -11,6 +14,7 @@ class DurableQueue : public Queue {
 
  private:
   std::queue<std::vector<uint8_t> > _queue;
+  std::condition_variable _cv;
 };
 
 #endif  // DURABLE_QUEUE_H
