@@ -1,5 +1,5 @@
 ### MAILBOX
-A simple message broker using BSD-style sockets and TCP goodness
+A simple message broker using BSD-style sockets and TCP goodness. This is a classroom project.
 
 #### MAILBOX
 is the broker - server which accepts and forwards messages to clients
